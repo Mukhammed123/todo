@@ -6,7 +6,7 @@
           <h2>{{ cardData.title }}</h2>
         </RouterLink>
         <div class="btns-container">
-          <button @click="editTodo()">Edit</button>
+          <button @click="$emit('edit-todo')">Edit</button>
           <button @click="$emit('delete-todo')">Delete</button>
         </div>
       </div>
@@ -35,14 +35,7 @@ export default {
     cardData: { type: Object, default: undefined },
     index: { type: Number, default: 0 },
   },
-  setup(props, context) {
-    const editTodo = () => {
-      console.log("Edit clicked");
-    };
-    return {
-      editTodo,
-    };
-  },
+  setup() {},
 };
 </script>
 

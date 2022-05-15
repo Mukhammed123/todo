@@ -15,8 +15,19 @@
       </div>
       <div class="dialog-footer">
         <button @click="$emit('close-dialog')">Cancel</button>
-        <button :disabled="(todoTitle || '').length === 0" @click="addTodo()">
+        <button
+          v-if="operation === 'add'"
+          :disabled="(todoTitle || '').length === 0"
+          @click="addTodo()"
+        >
           Add
+        </button>
+        <button
+          v-else
+          :disabled="(todoTitle || '').length === 0"
+          @click="editTodo()"
+        >
+          Edit
         </button>
       </div>
     </div>
@@ -28,13 +39,17 @@ import { ref } from "vue";
 import { useTodoStore } from "@/stores/todo";
 
 export default {
-  name: "AddTodoDialog",
+  name: "TodoDialog",
   props: {
     openDialog: { type: String, default: "off" },
+    operation: { type: String, default: "add" },
+    editTodoTitle: { type: String, default: "edit" },
+    index: { type: Number, default: -1 },
   },
   emits: ["close-dialog"],
   setup(props, context) {
     const todoTitle = ref("");
+    if (props.operation === "edit") todoTitle.value = props.editTodoTitle;
     const todoStore = useTodoStore();
     const addTodo = () => {
       const newTodo = {
@@ -47,8 +62,15 @@ export default {
       todoStore.setTodoList(tempArr);
       context.emit("close-dialog");
     };
+    const editTodo = () => {
+      const tempArr = [...todoStore.todoList];
+      tempArr[props.index].title = todoTitle.value;
+      todoStore.setTodoList(tempArr);
+      context.emit("close-dialog");
+    };
     return {
       addTodo,
+      editTodo,
       todoTitle,
     };
   },

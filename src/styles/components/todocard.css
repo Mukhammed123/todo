@@ -1,0 +1,29 @@
+.todo-card {
+    height: 100%;
+}
+.todo-card-content {
+    height: 100%;
+    padding: 1em 1em 0;
+}
+.todo-grid{
+    display: grid;
+    grid-column: 1fr;
+    overflow: hidden;
+}
+.grid-container {
+    height: 100%;
+}
+.todo-grid label {
+    cursor: pointer;
+}
+.todo-grid label input {
+    cursor: pointer;
+}
+a {
+    text-decoration: none;
+    color: #000;
+}
+.card-toolbar {
+    display: flex;
+    justify-content: space-between;
+}

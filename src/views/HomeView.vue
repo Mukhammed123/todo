@@ -45,6 +45,7 @@ export default {
   name: "HomeView",
   components: { TodoCard, TodoDialog, ConfirmDialog },
   setup() {
+    console.log("Setup");
     const todoListStore = useTodoStore();
     const { todoList } = storeToRefs(todoListStore);
     const openDialog = ref("off");

@@ -14,7 +14,7 @@
           :key="`detail-${index}`"
           class="checkbox-container"
         >
-          <label for="checkbox" :class="`${checkbox.checked ? 'checked' : ''}`">
+          <div :class="`${checkbox.checked ? 'checked' : ''}`">
             <input
               type="checkbox"
               :checked="checkbox.checked"
@@ -26,7 +26,7 @@
             >
               {{ checkbox.content }}
             </div>
-          </label>
+          </div>
           <button @click="removeCheckbox(index)">Remove</button>
         </div>
       </div>

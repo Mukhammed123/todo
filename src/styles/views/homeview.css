@@ -16,3 +16,30 @@ h1 {
     overflow: hidden;
     border: 1px solid #000;
 }
+
+@media only screen and (max-width: 930px) {
+    .todo-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: 250px;
+        grid-gap: 1em;
+    }
+}
+
+@media only screen and (max-width: 720px) {
+    .todo-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: 250px;
+        grid-gap: 1em;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .todo-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-auto-rows: 250px;
+        grid-gap: 1em;
+    }
+}

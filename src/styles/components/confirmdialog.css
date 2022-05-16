@@ -13,8 +13,10 @@
 .confirm-dialog {
     background-color: rgb(255, 255, 255);
     width: 350px;
-    height: 350px;
+    height: 200px;
     margin: auto;
+    display: grid;
+    grid-column: 1fr;
 }
 
 .add-todo-dialog h2 {
@@ -41,4 +43,10 @@ input.title-input:focus {
 .dialog-footer {
     display: flex;
     justify-content: space-between;
+    align-items: end;
+}
+
+button {
+    height: 40px;
+    margin: 5px;
 }

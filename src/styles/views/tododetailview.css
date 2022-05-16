@@ -8,12 +8,11 @@ header h1 {
     text-align: center;
 }
 .content-input {
-    border: 0;
+    width: 100%;
+    cursor: pointer;
     font-size: x-large;
 }
-.content-input:focus {
-    outline: none;
-}
+
 .view-body {
     display: grid;
     grid-template-rows: auto 50px;
@@ -33,11 +32,11 @@ header h1 {
     display: flex;
     justify-content: space-between;
 }
-.checkbox-container label{
+.checkbox-container div{
     display: flex;
     align-items: center;
 }
-label.checked {
+.checked {
     text-decoration: line-through;
 }
 .add-checkbox-btn {
@@ -59,8 +58,8 @@ input[type="text"]:focus {
 }
 
 input[type="checkbox"] {
-    height: 25px;
-    width: 25px;
+    height: 25px !important;
+    width: 25px !important;
     margin-right: 3px;
 }
 
@@ -74,4 +73,7 @@ input[type="checkbox"] {
 }
 .delete-cancel-btns button {
     margin-right: 5px;
+}
+button {
+    height: 38.4px;
 }

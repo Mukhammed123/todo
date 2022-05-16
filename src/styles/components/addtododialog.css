@@ -3,7 +3,7 @@
     top: 0;
     left: 0;
     height: 100%;
-    width: 80%;
+    width: 100%;
     z-index: 1;
     background: rgba(0, 0, 0, 0.6);
     align-items: center;
@@ -13,8 +13,10 @@
 .add-todo-dialog {
     background-color: rgb(255, 255, 255);
     width: 350px;
-    height: 350px;
+    height: 250px;
     margin: auto;
+    display: grid;
+    grid-column: 1fr;
 }
 
 .add-todo-dialog h2 {
@@ -41,4 +43,10 @@ input.title-input:focus {
 .dialog-footer {
     display: flex;
     justify-content: space-between;
+    align-items: end;
+}
+
+button {
+    height: 40px;
+    margin: 5px;
 }

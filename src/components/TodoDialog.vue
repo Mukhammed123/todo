@@ -58,7 +58,7 @@ export default {
         checked: false,
       };
       const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
-      tempArr.push(newTodo);
+      tempArr.unshift(newTodo);
       todoStore.setTodoList(tempArr);
       context.emit("close-dialog");
     };

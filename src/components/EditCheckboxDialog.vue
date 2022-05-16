@@ -2,13 +2,20 @@
   <div :class="`dialog-container dialog-fade-${openEditDialog}`">
     <div class="dialog-content">
       <div class="input-container">
-        <span ref="textarea" class="textarea" role="textbox" contenteditable>{{
-          editContent
-        }}</span>
+        <span
+          ref="textarea"
+          class="textarea"
+          role="textbox"
+          contenteditable
+          @input="disableBtn"
+          >{{ editContent }}</span
+        >
       </div>
       <div class="btns-container">
         <button @click="$emit('close-dialog')">Cancel</button>
-        <button @click="editContentFunc()">Edit</button>
+        <button :disabled="disableEditBtn" @click="editContentFunc()">
+          Edit
+        </button>
       </div>
     </div>
   </div>
@@ -26,6 +33,7 @@ export default {
   setup(props, context) {
     const editContent = toRef(props, "content");
     const textarea = ref(null);
+    const disableEditBtn = ref(false);
     const editContentFunc = () => {
       const sendData = {
         index: props.index,
@@ -33,9 +41,18 @@ export default {
       };
       context.emit("edit-content", sendData);
     };
+    const disableBtn = (val) => {
+      if (val.target.textContent.length === 0) {
+        disableEditBtn.value = true;
+      } else {
+        disableEditBtn.value = false;
+      }
+    };
     return {
       editContent,
       textarea,
+      disableBtn,
+      disableEditBtn,
       editContentFunc,
     };
   },

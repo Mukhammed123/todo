@@ -58,9 +58,8 @@ input[type="text"]:focus {
 }
 
 input[type="checkbox"] {
-    height: 25px !important;
-    width: 25px !important;
-    margin-right: 3px;
+    transform: scale(1.5);
+    margin-right: 6px;
 }
 
 .add-button-container {

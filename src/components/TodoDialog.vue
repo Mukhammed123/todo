@@ -57,13 +57,13 @@ export default {
         todos: [],
         checked: false,
       };
-      const tempArr = [...todoStore.todoList];
+      const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
       tempArr.push(newTodo);
       todoStore.setTodoList(tempArr);
       context.emit("close-dialog");
     };
     const editTodo = () => {
-      const tempArr = [...todoStore.todoList];
+      const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
       tempArr[props.index].title = todoTitle.value;
       todoStore.setTodoList(tempArr);
       context.emit("close-dialog");

@@ -31,7 +31,28 @@
         </div>
       </div>
       <div class="view-footer">
-        <button @click="cancelClicked()">Cancel</button>
+        <div class="delete-cancel-btns">
+          <button
+            @click="
+              openConfirmDialog(
+                'Are you sure you want to discard all changes?',
+                'cancel'
+              )
+            "
+          >
+            Cancel
+          </button>
+          <button
+            @click="
+              openConfirmDialog(
+                'Are you sure you want to delete this todo?',
+                'delete'
+              )
+            "
+          >
+            Delete
+          </button>
+        </div>
         <button @click="saveChanges()">Save</button>
       </div>
     </div>
@@ -43,6 +64,14 @@
       @close-dialog="editDialog = 'out'"
       @edit-content="editContent"
     ></edit-checkbox-dialog>
+    <confirm-dialog
+      :open-dialog="confirmDialog"
+      :received-text="confirmText"
+      :operation="confirmOperation"
+      @close-dialog="confirmDialog = 'out'"
+      @confirmed-cancel="cancelClicked()"
+      @confirmed-delete="deleteTodo()"
+    />
   </div>
 </template>
 
@@ -51,10 +80,11 @@ import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useTodoStore } from "@/stores/todo";
 import EditCheckboxDialog from "@/components/EditCheckboxDialog.vue";
+import ConfirmDialog from "@/components/ConfirmDialog.vue";
 
 export default {
   name: "TodoDetailView",
-  components: { EditCheckboxDialog },
+  components: { EditCheckboxDialog, ConfirmDialog },
   setup() {
     const todoStore = useTodoStore();
     const route = useRoute();
@@ -66,6 +96,10 @@ export default {
     const sendContent = ref("");
     const sendIndex = ref(-1);
     const editContentKey = ref(0);
+    const confirmKey = ref(0);
+    const confirmDialog = ref("off");
+    const confirmText = ref("");
+    const confirmOperation = ref("");
     const index = Number(route.params.id);
     if (!isNaN(index)) {
       todos.value = JSON.parse(JSON.stringify(todoStore.todoList[index].todos));
@@ -92,7 +126,7 @@ export default {
         title: todoTitle.value,
         todos: todos.value,
       };
-      const temp = [...todoStore.todoList];
+      const temp = JSON.parse(JSON.stringify(todoStore.todoList));
       temp[index] = saveTodo;
       todoStore.setTodoList(temp);
       router.push("/");
@@ -110,6 +144,19 @@ export default {
       todos.value[data.index].content = data.content;
       editDialog.value = "out";
     };
+    const openConfirmDialog = (text, op) => {
+      confirmOperation.value = op;
+      confirmText.value = text;
+      confirmKey.value += 1;
+      confirmDialog.value = "in";
+    };
+    const deleteTodo = () => {
+      const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
+      tempArr.splice(index, 1);
+      todoStore.setTodoList(tempArr);
+      confirmDialog.value = "out";
+      router.push("/");
+    };
     return {
       todos,
       newCheckbox,
@@ -121,10 +168,16 @@ export default {
       inputCheck,
       addCheckbox,
       saveChanges,
+      confirmText,
+      openConfirmDialog,
+      confirmOperation,
       cancelClicked,
       removeCheckbox,
       sendContent,
       sendIndex,
+      confirmDialog,
+      confirmKey,
+      deleteTodo,
     };
   },
 };

@@ -27,8 +27,10 @@
     <confirm-dialog
       :open-dialog="confirmDialog"
       :todo-index="delTodoIndex"
+      operation="delete"
+      received-text="Are you sure you want to delete this todo?"
       @close-dialog="confirmDialog = 'out'"
-      @delete-todo="deleteTodo"
+      @confirmed-delete="deleteTodo"
     />
   </main>
 </template>
@@ -68,7 +70,7 @@ export default {
       confirmDialog.value = "in";
     };
     const deleteTodo = (index) => {
-      const tempArr = [...todoList.value];
+      const tempArr = JSON.parse(JSON.stringify(todoList.value));
       tempArr.splice(index, 1);
       todoListStore.setTodoList(tempArr);
       confirmDialog.value = "out";

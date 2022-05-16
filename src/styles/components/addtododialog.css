@@ -2,21 +2,12 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 100vh;
-    width: 100%;
+    height: 100%;
+    width: 80%;
     z-index: 1;
     background: rgba(0, 0, 0, 0.6);
     align-items: center;
     display: flex;
-}
-.dialog-fade-in {
-    animation: fadein 0.2s linear 1 forwards;
-}
-.dialog-fade-out {
-    animation: fadeout 0.2s linear 1 forwards;
-}
-.dialog-fade-off {
-    display: none;
 }
 
 .add-todo-dialog {
@@ -50,16 +41,4 @@ input.title-input:focus {
 .dialog-footer {
     display: flex;
     justify-content: space-between;
-}
-
-@keyframes fadein {
-    0% { opacity: 0; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
-
-@keyframes fadeout {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; } 
-    100% { opacity: 0; z-index: -1;}
 }

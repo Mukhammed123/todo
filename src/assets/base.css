@@ -81,3 +81,27 @@ body {
 #app {
   height: 100%;
 }
+main {
+  height: 100%;
+}
+.dialog-fade-in {
+  animation: fadein 0.2s linear 1 forwards;
+}
+.dialog-fade-out {
+  animation: fadeout 0.2s linear 1 forwards;
+}
+.dialog-fade-off {
+  display: none !important;
+}
+
+@keyframes fadein {
+  0% { opacity: 0; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeout {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; } 
+  100% { opacity: 0; z-index: -1;}
+}

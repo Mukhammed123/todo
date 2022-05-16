@@ -36,4 +36,4 @@ npm run build
 ```sh
 npm run lint
 ```
->>>>>>> master
+>>>>>>> main

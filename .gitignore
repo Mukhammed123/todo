@@ -20,6 +20,11 @@ coverage
 # django env
 todoenv
 
+# django temp db
+migrations
+db.sqlite3
+__pycache__
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

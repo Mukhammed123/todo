@@ -12,4 +12,4 @@ class TodoListSerializer(serializers.ModelSerializer):
     model = TodoList
     fields = '__all__'
 
-    read_only_field = ('todo_id')
+    read_only_field = ['todo_id']

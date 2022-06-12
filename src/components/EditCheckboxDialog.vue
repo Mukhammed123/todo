@@ -36,8 +36,8 @@ export default {
     const disableEditBtn = ref(false);
     const editContentFunc = () => {
       const sendData = {
-        index: props.index,
-        content: textarea.value.textContent,
+        todoId: props.index,
+        description: textarea.value.textContent,
       };
       context.emit("edit-content", sendData);
     };

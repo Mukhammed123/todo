@@ -14,10 +14,10 @@
           :key="`detail-${index}`"
           class="checkbox-container"
         >
-          <div :class="`${checkbox.finsihed ? 'checked' : ''}`">
+          <div :class="`${checkbox.finished ? 'checked' : ''}`">
             <input
               type="checkbox"
-              :checked="checkbox.finsihed"
+              :checked="checkbox.finished"
               @input="inputCheck(index)"
             />
             <div
@@ -90,7 +90,7 @@ export default {
     const todoStore = useTodoStore();
     const route = useRoute();
     const router = useRouter();
-    const todos = ref(null);
+    const todos = ref([]);
     const todoTitle = ref("");
     const newCheckbox = ref("");
     const editDialog = ref("off");
@@ -102,27 +102,31 @@ export default {
     const confirmText = ref("");
     const confirmOperation = ref("");
     const todoId = Number(route.params.id);
+    const originalData = ref([]);
 
     const getTodos = async () => {
       const response = await axios.get(`http://127.0.0.1:8000/api/todo/list/${todoId}`);
-      if(response.status === 200)
+      if(response.status === 200) {
         todos.value = response.data;
+        originalData.value = JSON.parse(JSON.stringify(response.data));
+        console.log(todos.value);
+      }
       else todos.value = [];
     }
 
     if (!isNaN(todoId)) {
       getTodos();
-      console.log(todoTitle.value)
     }
     
     const inputCheck = (checkedIndex) => {
-      todos.value[checkedIndex].checked = !todos.value[checkedIndex].checked;
+      todos.value[checkedIndex].finished = !todos.value[checkedIndex].finished;
     };
     const addCheckbox = () => {
       if (newCheckbox.value.length > 0) {
         const temp = {
-          content: newCheckbox.value,
-          checked: false,
+          description: newCheckbox.value,
+          finished: false,
+          todo_id: todoId
         };
         todos.value.unshift(temp);
         newCheckbox.value = "";
@@ -132,14 +136,8 @@ export default {
       todos.value.splice(checkboxIndex, 1);
     };
     const saveChanges = () => {
-      const saveTodo = {
-        title: todoTitle.value,
-        todos: todos.value,
-      };
-      const temp = JSON.parse(JSON.stringify(todoStore.todoList));
-      temp[todoId] = saveTodo;
-      todoStore.setTodoList(temp);
-      router.push("/");
+      
+      axios.post("http://127.0.0.1:8000/api/todo/list/", todos.value[0]);
     };
     const cancelClicked = () => {
       router.push("/");
@@ -151,7 +149,8 @@ export default {
       editContentKey.value += 1;
     };
     const editContent = (data) => {
-      todos.value[data.todoId].content = data.content;
+      todos.value[data.todoId].description = data.description;
+      axios.put(`http://127.0.0.1:8000/api/todo/list/${todos.value[data.todoId].id}/`, todos.value[data.todoId]);
       editDialog.value = "out";
     };
     const openConfirmDialog = (text, op) => {

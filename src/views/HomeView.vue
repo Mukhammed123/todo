@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { defineComponent, toRef, ref, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useTodoStore } from "@/stores/todo";
 import { storeToRefs } from "pinia";
 import TodoCard from "@/components/TodoCard.vue";

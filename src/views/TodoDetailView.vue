@@ -14,17 +14,17 @@
           :key="`detail-${index}`"
           class="checkbox-container"
         >
-          <div :class="`${checkbox.checked ? 'checked' : ''}`">
+          <div :class="`${checkbox.finsihed ? 'checked' : ''}`">
             <input
               type="checkbox"
-              :checked="checkbox.checked"
+              :checked="checkbox.finsihed"
               @input="inputCheck(index)"
             />
             <div
               class="content-input"
-              @click="openEditDialog(checkbox.content, index)"
+              @click="openEditDialog(checkbox.description, index)"
             >
-              {{ checkbox.content }}
+              {{ checkbox.description }}
             </div>
           </div>
           <button @click="removeCheckbox(index)">Remove</button>
@@ -77,6 +77,7 @@
 
 <script>
 import { ref } from "vue";
+import axios from 'axios';
 import { useRoute, useRouter } from "vue-router";
 import { useTodoStore } from "@/stores/todo";
 import EditCheckboxDialog from "@/components/EditCheckboxDialog.vue";
@@ -100,11 +101,20 @@ export default {
     const confirmDialog = ref("off");
     const confirmText = ref("");
     const confirmOperation = ref("");
-    const index = Number(route.params.id);
-    if (!isNaN(index)) {
-      todos.value = JSON.parse(JSON.stringify(todoStore.todoList[index].todos));
-      todoTitle.value = todoStore.todoList[index].title;
+    const todoId = Number(route.params.id);
+
+    const getTodos = async () => {
+      const response = await axios.get(`http://127.0.0.1:8000/api/todo/list/${todoId}`);
+      if(response.status === 200)
+        todos.value = response.data;
+      else todos.value = [];
     }
+
+    if (!isNaN(todoId)) {
+      getTodos();
+      console.log(todoTitle.value)
+    }
+    
     const inputCheck = (checkedIndex) => {
       todos.value[checkedIndex].checked = !todos.value[checkedIndex].checked;
     };
@@ -127,21 +137,21 @@ export default {
         todos: todos.value,
       };
       const temp = JSON.parse(JSON.stringify(todoStore.todoList));
-      temp[index] = saveTodo;
+      temp[todoId] = saveTodo;
       todoStore.setTodoList(temp);
       router.push("/");
     };
     const cancelClicked = () => {
       router.push("/");
     };
-    const openEditDialog = (value, index) => {
+    const openEditDialog = (value, todoId) => {
       editDialog.value = "in";
       sendContent.value = value;
-      sendIndex.value = index;
+      sendIndex.value = todoId;
       editContentKey.value += 1;
     };
     const editContent = (data) => {
-      todos.value[data.index].content = data.content;
+      todos.value[data.todoId].content = data.content;
       editDialog.value = "out";
     };
     const openConfirmDialog = (text, op) => {
@@ -152,7 +162,7 @@ export default {
     };
     const deleteTodo = () => {
       const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
-      tempArr.splice(index, 1);
+      tempArr.splice(todoId, 1);
       todoStore.setTodoList(tempArr);
       confirmDialog.value = "out";
       router.push("/");

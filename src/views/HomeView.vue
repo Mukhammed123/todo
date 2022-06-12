@@ -9,7 +9,6 @@
         <div v-for="(item, index) in todoList" :key="`${item}-${index}`">
           <todo-card
             :card-data="item"
-            :index="index"
             @edit-todo="showDialog('edit', item.title, index)"
             @delete-todo="openConfirmDialog(index)"
           ></todo-card>
@@ -36,12 +35,13 @@
 </template>
 
 <script>
-import { defineComponent, toRef, ref } from "vue";
+import { defineComponent, toRef, ref, onMounted } from "vue";
 import { useTodoStore } from "@/stores/todo";
 import { storeToRefs } from "pinia";
 import TodoCard from "@/components/TodoCard.vue";
 import TodoDialog from "@/components/TodoDialog.vue";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import axios from 'axios';
 
 export default {
   name: "HomeView",
@@ -56,6 +56,15 @@ export default {
     const todoKey = ref(0);
     const editTodoTitle = ref("");
     const editIndex = ref(null);
+
+    onMounted( async () => {
+      const response = await axios.get("http://127.0.0.1:8000/api/todo/");
+      console.log(response);
+      if(response.status === 200) {
+        todoListStore.setTodoList(response.data);
+        console.log(todoListStore.todoList);
+      }
+    })
 
     const showDialog = (op, title, index) => {
       todoOperation.value = op;

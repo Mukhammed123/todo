@@ -139,7 +139,7 @@ export const useTodoStore = defineStore({
         setTodoList(todoList) {
             this.todoList = todoList.map((todo) => {
                 const item = {
-                    todoId: todo.id,
+                    id: todo.id,
                     title: todo.title,
                     todos: []
                 }

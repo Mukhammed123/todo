@@ -11,6 +11,21 @@ def todoView(request):
   print(serializer)
   return Response(serializer.data)
 
+@api_view(["PUT", "DELETE"])
+def todoDetailView(request, pk):
+  instance = Todo.objects.get(id=pk)
+  data = request.data
+  if request.method == "DELETE":
+    instance.delete()
+    return Response({"message": "Todo was successfully deleted"})
+  elif request.method == "PUT":
+    serializer = TodoSerializer(instance=instance, data=data)
+    if serializer.is_valid():
+      serializer.save()
+    else:
+      return Response({"message": "Failed to Updated"})
+    return Response(serializer.data)
+
 @api_view(["GET", "POST"])
 def todoListView(request):
   serializer = nan

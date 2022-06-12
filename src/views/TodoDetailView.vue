@@ -120,6 +120,7 @@ export default {
     
     const inputCheck = (checkedIndex) => {
       todos.value[checkedIndex].finished = !todos.value[checkedIndex].finished;
+      axios.put(`http://127.0.0.1:8000/api/todo/list/${todos.value[checkedIndex].id}/`, todos.value[checkedIndex]);
     };
     const addCheckbox = () => {
       if (newCheckbox.value.length > 0) {
@@ -129,10 +130,12 @@ export default {
           todo_id: todoId
         };
         todos.value.unshift(temp);
+        axios.post("http://127.0.0.1:8000/api/todo/list/", temp);
         newCheckbox.value = "";
       }
     };
     const removeCheckbox = (checkboxIndex) => {
+      axios.delete(`http://127.0.0.1:8000/api/todo/list/${todos.value[checkboxIndex].id}/`);
       todos.value.splice(checkboxIndex, 1);
     };
     const saveChanges = () => {

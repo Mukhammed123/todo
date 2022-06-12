@@ -24,10 +24,11 @@ def todoListView(request):
     todoList = TodoList.objects.all()
     serializer = TodoListSerializer(todoList, many=True)
 
-  return Response(responseData)
+  return Response(serializer.data)
 
-@api_view(["GET", "PUT"])
+@api_view(["GET", "PUT", "DELETE"])
 def todoListDetailView(request, pk):
+  print(request.method)
   serializer = nan
   if request.method == "PUT":
     data = request.data
@@ -36,9 +37,15 @@ def todoListDetailView(request, pk):
 
     if serializer.is_valid():
       serializer.save()
+
+  elif request.method == "DELETE":
+    instance = TodoList.objects.get(id=pk)
+    instance.delete()
+    return Response({"message": "Todo item was successfully deleted"})
   
   elif request.method == "GET":
     todoList = TodoList.objects.filter(todo_id=pk)
     serializer = TodoListSerializer(todoList, many=True)
+
 
   return Response(serializer.data)

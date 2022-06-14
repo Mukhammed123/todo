@@ -35,7 +35,8 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, toRef } from "vue";
+import axios from 'axios';
 import { useTodoStore } from "@/stores/todo";
 
 export default {
@@ -44,29 +45,27 @@ export default {
     openDialog: { type: String, default: "off" },
     operation: { type: String, default: "add" },
     editTodoTitle: { type: String, default: "edit" },
-    index: { type: Number, default: -1 },
+    editId: { type: Number, default: -1 },
   },
-  emits: ["close-dialog"],
+  emits: ["close-dialog", "get-data"],
   setup(props, context) {
+    const todoId = toRef(props, 'editId');
     const todoTitle = ref("");
     if (props.operation === "edit") todoTitle.value = props.editTodoTitle;
     const todoStore = useTodoStore();
-    const addTodo = () => {
+    const addTodo = async () => {
       const newTodo = {
         title: todoTitle.value,
-        todos: [],
-        checked: false,
+        finished: false,
       };
-      const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
-      tempArr.unshift(newTodo);
-      todoStore.setTodoList(tempArr);
+      await axios.post("http://127.0.0.1:8000/api/todo/", newTodo);
       context.emit("close-dialog");
+      context.emit("get-data");
     };
-    const editTodo = () => {
-      const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
-      tempArr[props.index].title = todoTitle.value;
-      todoStore.setTodoList(tempArr);
+    const editTodo = async () => {
+      await axios.put(`http://127.0.0.1:8000/api/todo/${todoId.value}/`, {title: todoTitle.value});
       context.emit("close-dialog");
+      context.emit("get-data");
     };
     return {
       addTodo,

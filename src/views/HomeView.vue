@@ -6,12 +6,11 @@
         <button @click="showDialog('add')">Add Todo</button>
       </h1>
       <div class="todo-list">
-        <div v-for="(item, index) in todoList" :key="`${item}-${index}`">
+        <div v-for="(item) in todos" :key="`${item.title}`">
           <todo-card
             :card-data="item"
-            :index="index"
-            @edit-todo="showDialog('edit', item.title, index)"
-            @delete-todo="openConfirmDialog(index)"
+            @edit-todo="showDialog('edit', item.title, item.id)"
+            @delete-todo="openConfirmDialog(item.id)"
           ></todo-card>
         </div>
       </div>
@@ -21,7 +20,8 @@
       :operation="todoOperation"
       :edit-todo-title="editTodoTitle"
       @close-dialog="openDialog = 'out'"
-      :index="editIndex"
+      @get-data="getTodos"
+      :edit-id="editId"
       :key="todoKey"
     />
     <confirm-dialog
@@ -36,52 +36,62 @@
 </template>
 
 <script>
-import { defineComponent, toRef, ref } from "vue";
-import { useTodoStore } from "@/stores/todo";
-import { storeToRefs } from "pinia";
+import { ref, onMounted } from "vue";
 import TodoCard from "@/components/TodoCard.vue";
 import TodoDialog from "@/components/TodoDialog.vue";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import axios from 'axios';
 
 export default {
   name: "HomeView",
   components: { TodoCard, TodoDialog, ConfirmDialog },
   setup() {
-    const todoListStore = useTodoStore();
-    const { todoList } = storeToRefs(todoListStore);
     const openDialog = ref("off");
     const confirmDialog = ref("off");
     const delTodoIndex = ref(null);
     const todoOperation = ref("add");
     const todoKey = ref(0);
     const editTodoTitle = ref("");
-    const editIndex = ref(null);
+    const editId = ref(null);
+    const todos = ref([]);
 
-    const showDialog = (op, title, index) => {
+    const getTodos = async () => {
+      const response = await axios.get("http://127.0.0.1:8000/api/todo/");
+      if(response.status === 200) {
+        todos.value = response.data;
+      }
+    }
+
+    onMounted( async () => {
+      getTodos()
+    })
+
+    const showDialog = (op, title, id) => {
       todoOperation.value = op;
       editTodoTitle.value = op === "edit" ? title : "";
-      editIndex.value = index;
+      editId.value = id;
       todoKey.value += 1;
       openDialog.value = "in";
     };
-    const openConfirmDialog = (index) => {
-      delTodoIndex.value = index;
+    const openConfirmDialog = (delId) => {
+      delTodoIndex.value = delId;
       confirmDialog.value = "in";
     };
-    const deleteTodo = (index) => {
-      const tempArr = JSON.parse(JSON.stringify(todoList.value));
-      tempArr.splice(index, 1);
-      todoListStore.setTodoList(tempArr);
+
+    const deleteTodo = async (delId) => {
+      await axios.delete(`http://127.0.0.1:8000/api/todo/${delId}/`);
       confirmDialog.value = "out";
+      getTodos();
     };
 
     return {
       todoKey,
-      todoList,
+      todos,
       openDialog,
       confirmDialog,
       showDialog,
-      editIndex,
+      getTodos,
+      editId,
       deleteTodo,
       delTodoIndex,
       editTodoTitle,

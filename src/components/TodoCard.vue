@@ -2,7 +2,7 @@
   <div class="todo-card">
     <div class="todo-card-content">
       <div class="card-toolbar">
-        <RouterLink :to="`/todo-detail/${index}`">
+        <RouterLink :to="`/todo-detail/${cardData.id}`">
           <h2>{{ cardData.title }}</h2>
         </RouterLink>
         <div class="btns-container">
@@ -10,7 +10,7 @@
           <button @click="$emit('delete-todo')">Delete</button>
         </div>
       </div>
-      <RouterLink :to="`/todo-detail/${index}`">
+      <RouterLink :to="`/todo-detail/${cardData.id}`">
         <div class="grid-container">
           <div class="todo-grid">
             <label
@@ -33,7 +33,6 @@ export default {
   name: "TodoCard",
   props: {
     cardData: { type: Object, default: undefined },
-    index: { type: Number, default: 0 },
   },
   setup() {},
 };

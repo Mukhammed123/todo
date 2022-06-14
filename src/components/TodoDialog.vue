@@ -53,19 +53,17 @@ export default {
     const todoTitle = ref("");
     if (props.operation === "edit") todoTitle.value = props.editTodoTitle;
     const todoStore = useTodoStore();
-    const addTodo = () => {
+    const addTodo = async () => {
       const newTodo = {
         title: todoTitle.value,
-        todos: [],
-        checked: false,
+        finished: false,
       };
-      const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
-      tempArr.unshift(newTodo);
-      todoStore.setTodoList(tempArr);
+      await axios.post("http://127.0.0.1:8000/api/todo/", newTodo);
       context.emit("close-dialog");
+      context.emit("get-data");
     };
-    const editTodo = () => {
-      axios.put(`http://127.0.0.1:8000/api/todo/${todoId.value}/`, {title: todoTitle.value});
+    const editTodo = async () => {
+      await axios.put(`http://127.0.0.1:8000/api/todo/${todoId.value}/`, {title: todoTitle.value});
       context.emit("close-dialog");
       context.emit("get-data");
     };

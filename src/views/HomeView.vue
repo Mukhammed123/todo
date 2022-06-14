@@ -37,7 +37,6 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { storeToRefs } from "pinia";
 import TodoCard from "@/components/TodoCard.vue";
 import TodoDialog from "@/components/TodoDialog.vue";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
@@ -71,22 +70,18 @@ export default {
       todoOperation.value = op;
       editTodoTitle.value = op === "edit" ? title : "";
       editId.value = id;
-      console.log("show: ", id)
       todoKey.value += 1;
       openDialog.value = "in";
     };
-    const openConfirmDialog = (index) => {
-      delTodoIndex.value = index;
+    const openConfirmDialog = (delId) => {
+      delTodoIndex.value = delId;
       confirmDialog.value = "in";
     };
 
-    const deleteTodo = (index) => {
-      // const tempArr = JSON.parse(JSON.stringify(todoList.value));
-      // tempArr.splice(index, 1);
-      // todoListStore.setTodoList(tempArr);
-      // confirmDialog.value = "out";
-
-      // getTodos();
+    const deleteTodo = async (delId) => {
+      await axios.delete(`http://127.0.0.1:8000/api/todo/${delId}/`);
+      confirmDialog.value = "out";
+      getTodos();
     };
 
     return {

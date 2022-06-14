@@ -2,7 +2,7 @@
   <div class="todo-card">
     <div class="todo-card-content">
       <div class="card-toolbar">
-        <RouterLink :to="`/todo-detail/${cardData.todoId}`">
+        <RouterLink :to="`/todo-detail/${cardData.id}`">
           <h2>{{ cardData.title }}</h2>
         </RouterLink>
         <div class="btns-container">
@@ -10,7 +10,7 @@
           <button @click="$emit('delete-todo')">Delete</button>
         </div>
       </div>
-      <RouterLink :to="`/todo-detail/${cardData.todoId}`">
+      <RouterLink :to="`/todo-detail/${cardData.id}`">
         <div class="grid-container">
           <div class="todo-grid">
             <label

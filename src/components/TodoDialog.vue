@@ -37,6 +37,7 @@
 <script>
 import { ref, toRef } from "vue";
 import axios from 'axios';
+import { todoPath } from '@/services/apiPaths';
 import { useTodoStore } from "@/stores/todo";
 
 export default {
@@ -58,12 +59,12 @@ export default {
         title: todoTitle.value,
         finished: false,
       };
-      await axios.post("https://fast-cliffs-03764.herokuapp.com/api/todo/", newTodo);
+      await axios.post(todoPath, newTodo);
       context.emit("close-dialog");
       context.emit("get-data");
     };
     const editTodo = async () => {
-      await axios.put(`https://fast-cliffs-03764.herokuapp.com/api/todo/${todoId.value}/`, {title: todoTitle.value});
+      await axios.put(`${todoPath}${todoId.value}/`, {title: todoTitle.value});
       context.emit("close-dialog");
       context.emit("get-data");
     };

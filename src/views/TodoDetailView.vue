@@ -78,6 +78,7 @@
 <script>
 import { ref } from "vue";
 import axios from 'axios';
+import { todoItemPath } from '@/services/apiPaths';
 import { useRoute, useRouter } from "vue-router";
 import { useTodoStore } from "@/stores/todo";
 import EditCheckboxDialog from "@/components/EditCheckboxDialog.vue";
@@ -105,7 +106,7 @@ export default {
     const originalData = ref([]);
 
     const getTodos = async () => {
-      const response = await axios.get(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todoId}`);
+      const response = await axios.get(`${todoItemPath}${todoId}`);
       if(response.status === 200) {
         todos.value = response.data;
         originalData.value = JSON.parse(JSON.stringify(response.data));
@@ -120,7 +121,7 @@ export default {
     
     const inputCheck = (checkedIndex) => {
       todos.value[checkedIndex].finished = !todos.value[checkedIndex].finished;
-      axios.put(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todos.value[checkedIndex].id}/`, todos.value[checkedIndex]);
+      axios.put(`${todoItemPath}${todos.value[checkedIndex].id}/`, todos.value[checkedIndex]);
     };
     const addCheckbox = () => {
       if (newCheckbox.value.length > 0) {
@@ -130,17 +131,17 @@ export default {
           todo_id: todoId
         };
         todos.value.unshift(temp);
-        axios.post("https://fast-cliffs-03764.herokuapp.com/api/todo/list/", temp);
+        axios.post(todoItemPath, temp);
         newCheckbox.value = "";
       }
     };
     const removeCheckbox = (checkboxIndex) => {
-      axios.delete(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todos.value[checkboxIndex].id}/`);
+      axios.delete(`${todoItemPath}${todos.value[checkboxIndex].id}/`);
       todos.value.splice(checkboxIndex, 1);
     };
     const saveChanges = () => {
       
-      axios.post("https://fast-cliffs-03764.herokuapp.com/api/todo/list/", todos.value[0]);
+      axios.post(todoItemPath, todos.value[0]);
     };
     const cancelClicked = () => {
       router.push("/");
@@ -152,8 +153,8 @@ export default {
       editContentKey.value += 1;
     };
     const editContent = (data) => {
-      todos.value[data.todoId].description = data.description;
-      axios.put(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todos.value[data.todoId].id}/`, todos.value[data.todoId]);
+      todos.value[data.index].description = data.description;
+      axios.put(`${todoItemPath}${todos.value[data.index].id}/`, todos.value[data.index]);
       editDialog.value = "out";
     };
     const openConfirmDialog = (text, op) => {

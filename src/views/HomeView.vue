@@ -41,6 +41,7 @@ import TodoCard from "@/components/TodoCard.vue";
 import TodoDialog from "@/components/TodoDialog.vue";
 import ConfirmDialog from "@/components/ConfirmDialog.vue";
 import axios from 'axios';
+import { todoPath } from '@/services/apiPaths';
 
 export default {
   name: "HomeView",
@@ -56,7 +57,7 @@ export default {
     const todos = ref([]);
 
     const getTodos = async () => {
-      const response = await axios.get("https://fast-cliffs-03764.herokuapp.com/api/todo/");
+      const response = await axios.get(todoPath);
       if(response.status === 200) {
         todos.value = response.data;
       }
@@ -79,7 +80,7 @@ export default {
     };
 
     const deleteTodo = async (delId) => {
-      await axios.delete(`https://fast-cliffs-03764.herokuapp.com/api/todo/${delId}/`);
+      await axios.delete(`${todoPath}${delId}/`);
       confirmDialog.value = "out";
       getTodos();
     };

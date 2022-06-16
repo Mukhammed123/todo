@@ -105,7 +105,7 @@ export default {
     const originalData = ref([]);
 
     const getTodos = async () => {
-      const response = await axios.get(`http://127.0.0.1:8000/api/todo/list/${todoId}`);
+      const response = await axios.get(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todoId}`);
       if(response.status === 200) {
         todos.value = response.data;
         originalData.value = JSON.parse(JSON.stringify(response.data));
@@ -120,7 +120,7 @@ export default {
     
     const inputCheck = (checkedIndex) => {
       todos.value[checkedIndex].finished = !todos.value[checkedIndex].finished;
-      axios.put(`http://127.0.0.1:8000/api/todo/list/${todos.value[checkedIndex].id}/`, todos.value[checkedIndex]);
+      axios.put(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todos.value[checkedIndex].id}/`, todos.value[checkedIndex]);
     };
     const addCheckbox = () => {
       if (newCheckbox.value.length > 0) {
@@ -130,17 +130,17 @@ export default {
           todo_id: todoId
         };
         todos.value.unshift(temp);
-        axios.post("http://127.0.0.1:8000/api/todo/list/", temp);
+        axios.post("https://fast-cliffs-03764.herokuapp.com/api/todo/list/", temp);
         newCheckbox.value = "";
       }
     };
     const removeCheckbox = (checkboxIndex) => {
-      axios.delete(`http://127.0.0.1:8000/api/todo/list/${todos.value[checkboxIndex].id}/`);
+      axios.delete(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todos.value[checkboxIndex].id}/`);
       todos.value.splice(checkboxIndex, 1);
     };
     const saveChanges = () => {
       
-      axios.post("http://127.0.0.1:8000/api/todo/list/", todos.value[0]);
+      axios.post("https://fast-cliffs-03764.herokuapp.com/api/todo/list/", todos.value[0]);
     };
     const cancelClicked = () => {
       router.push("/");
@@ -153,7 +153,7 @@ export default {
     };
     const editContent = (data) => {
       todos.value[data.todoId].description = data.description;
-      axios.put(`http://127.0.0.1:8000/api/todo/list/${todos.value[data.todoId].id}/`, todos.value[data.todoId]);
+      axios.put(`https://fast-cliffs-03764.herokuapp.com/api/todo/list/${todos.value[data.todoId].id}/`, todos.value[data.todoId]);
       editDialog.value = "out";
     };
     const openConfirmDialog = (text, op) => {

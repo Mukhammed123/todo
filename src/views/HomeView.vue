@@ -56,7 +56,7 @@ export default {
     const todos = ref([]);
 
     const getTodos = async () => {
-      const response = await axios.get("http://127.0.0.1:8000/api/todo/");
+      const response = await axios.get("https://fast-cliffs-03764.herokuapp.com/api/todo/");
       if(response.status === 200) {
         todos.value = response.data;
       }
@@ -79,7 +79,7 @@ export default {
     };
 
     const deleteTodo = async (delId) => {
-      await axios.delete(`http://127.0.0.1:8000/api/todo/${delId}/`);
+      await axios.delete(`https://fast-cliffs-03764.herokuapp.com/api/todo/${delId}/`);
       confirmDialog.value = "out";
       getTodos();
     };

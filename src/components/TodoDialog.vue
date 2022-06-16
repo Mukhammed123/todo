@@ -58,12 +58,12 @@ export default {
         title: todoTitle.value,
         finished: false,
       };
-      await axios.post("http://127.0.0.1:8000/api/todo/", newTodo);
+      await axios.post("https://fast-cliffs-03764.herokuapp.com/api/todo/", newTodo);
       context.emit("close-dialog");
       context.emit("get-data");
     };
     const editTodo = async () => {
-      await axios.put(`http://127.0.0.1:8000/api/todo/${todoId.value}/`, {title: todoTitle.value});
+      await axios.put(`https://fast-cliffs-03764.herokuapp.com/api/todo/${todoId.value}/`, {title: todoTitle.value});
       context.emit("close-dialog");
       context.emit("get-data");
     };

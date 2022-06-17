@@ -3,7 +3,7 @@
     <div class="todo-card-content">
       <div class="card-toolbar">
         <RouterLink :to="`/todo-detail/${cardData.id}`">
-          <h2>{{ cardData.title }}</h2>
+          <h2>{{ cardData.description }}</h2>
         </RouterLink>
         <div class="btns-container">
           <button @click="$emit('edit-todo')">Edit</button>

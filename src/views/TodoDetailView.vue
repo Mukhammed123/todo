@@ -77,8 +77,8 @@
 
 <script>
 import { ref } from "vue";
-import axios from 'axios';
-import { todoItemPath } from '@/services/apiPaths';
+import axios from "axios";
+import { todoItemPath } from "@/services/apiPaths";
 import { useRoute, useRouter } from "vue-router";
 import { useTodoStore } from "@/stores/todo";
 import EditCheckboxDialog from "@/components/EditCheckboxDialog.vue";
@@ -107,28 +107,30 @@ export default {
 
     const getTodos = async () => {
       const response = await axios.get(`${todoItemPath}${todoId}`);
-      if(response.status === 200) {
+      if (response.status === 200) {
         todos.value = response.data;
         originalData.value = JSON.parse(JSON.stringify(response.data));
         console.log(todos.value);
-      }
-      else todos.value = [];
-    }
+      } else todos.value = [];
+    };
 
     if (!isNaN(todoId)) {
       getTodos();
     }
-    
+
     const inputCheck = (checkedIndex) => {
       todos.value[checkedIndex].finished = !todos.value[checkedIndex].finished;
-      axios.put(`${todoItemPath}${todos.value[checkedIndex].id}/`, todos.value[checkedIndex]);
+      axios.put(
+        `${todoItemPath}${todos.value[checkedIndex].id}/`,
+        todos.value[checkedIndex]
+      );
     };
     const addCheckbox = () => {
       if (newCheckbox.value.length > 0) {
         const temp = {
           description: newCheckbox.value,
           finished: false,
-          todo_id: todoId
+          todo_id: todoId,
         };
         todos.value.unshift(temp);
         axios.post(todoItemPath, temp);
@@ -140,7 +142,6 @@ export default {
       todos.value.splice(checkboxIndex, 1);
     };
     const saveChanges = () => {
-      
       axios.post(todoItemPath, todos.value[0]);
     };
     const cancelClicked = () => {
@@ -154,7 +155,10 @@ export default {
     };
     const editContent = (data) => {
       todos.value[data.index].description = data.description;
-      axios.put(`${todoItemPath}${todos.value[data.index].id}/`, todos.value[data.index]);
+      axios.put(
+        `${todoItemPath}${todos.value[data.index].id}/`,
+        todos.value[data.index]
+      );
       editDialog.value = "out";
     };
     const openConfirmDialog = (text, op) => {

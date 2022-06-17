@@ -36,8 +36,8 @@
 
 <script>
 import { ref, toRef } from "vue";
-import axios from 'axios';
-import { todoPath } from '@/services/apiPaths';
+import axios from "axios";
+import { todoPath } from "@/services/apiPaths";
 import { useTodoStore } from "@/stores/todo";
 
 export default {
@@ -50,7 +50,7 @@ export default {
   },
   emits: ["close-dialog", "get-data"],
   setup(props, context) {
-    const todoId = toRef(props, 'editId');
+    const todoId = toRef(props, "editId");
     const todoTitle = ref("");
     if (props.operation === "edit") todoTitle.value = props.editTodoTitle;
     const todoStore = useTodoStore();
@@ -64,7 +64,9 @@ export default {
       context.emit("get-data");
     };
     const editTodo = async () => {
-      await axios.put(`${todoPath}${todoId.value}/`, {title: todoTitle.value});
+      await axios.put(`${todoPath}${todoId.value}/`, {
+        title: todoTitle.value,
+      });
       context.emit("close-dialog");
       context.emit("get-data");
     };

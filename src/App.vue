@@ -6,8 +6,8 @@
       >
         <ul class="space-y-2">
           <li v-for="(cat, index) in todoCats" :key="`${cat.title}-${index}`">
-            <a
-              href="#"
+            <router-link
+              :to="`/todo-detail/${cat.id}`"
               class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <svg
@@ -24,26 +24,38 @@
                 class="inline-flex justify-center items-center p-3 ml-3 w-3 h-3 text-sm font-medium text-blue-600 bg-blue-200 rounded-full dark:bg-blue-900 dark:text-blue-200"
                 >3</span
               >
-            </a>
+            </router-link>
           </li>
         </ul>
       </div>
     </aside>
-    <RouterView />
+    <RouterView :key="`${route.path}-${routerKey}`" />
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { RouterLink, RouterView } from "vue-router";
+import { useTodoStore } from "@/stores/todo";
 import axios from "axios";
 import { todoPath } from "@/services/apiPaths";
+import { useRoute } from "vue-router";
 
 let todoCats = ref([]);
+const todoStore = useTodoStore();
+const route = useRoute();
+const routerKey = ref(0);
+
 onMounted(async () => {
   const response = await axios.get(todoPath);
-  if (response.status === 200) todoCats.value = response.data;
+  if (response.status === 200) {
+    todoCats.value = response.data;
+    todoStore.setTodoCats(response.data);
+  }
 });
+
+const updateRouterKey = () => {
+  routerKey.value += 1;
+};
 </script>
 
 <style>

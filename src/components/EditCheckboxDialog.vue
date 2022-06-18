@@ -32,14 +32,14 @@ export default {
   },
   setup(props, context) {
     const editContent = toRef(props, "content");
-    const index = toRef(props, "index")
+    const index = toRef(props, "index");
     const textarea = ref(null);
     const disableEditBtn = ref(false);
     const editContentFunc = () => {
       const sendData = {
         description: textarea.value.textContent,
-        index: index.value
-      }
+        index: index.value,
+      };
       context.emit("edit-content", sendData);
     };
     const disableBtn = (val) => {

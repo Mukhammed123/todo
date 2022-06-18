@@ -107,3 +107,16 @@ main {
   50% { opacity: 0.5; } 
   100% { opacity: 0; z-index: -1;}
 }
+
+.app-container {
+  display: flex;
+  height: 100%;
+}
+
+aside > div {
+  height: 100%;
+}
+
+.white-svg {
+  filter: brightness(0) invert(1);
+}

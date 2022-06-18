@@ -4,10 +4,12 @@
       <div class="title-container">
         <div class="text-container">
           <h1>
-            Mukhammed Musa Todo List
+            Mukhammed Musa
             <!-- <button @click="showDialog('add')">Add Todo</button> -->
           </h1>
-          <h3>{{ todoCats.find((el) => el.id == todoId).title }}</h3>
+          <h3>
+            {{ (todoCats.find((el) => el.id == collectionId) ?? {}).title }}
+          </h3>
         </div>
       </div>
       <ul
@@ -21,7 +23,7 @@
         >
           <div class="description-container">
             <button
-            v-if="item.finished"
+              v-if="item.finished"
               type="button"
               class="text-white bg-green-400 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-400 font-medium rounded-lg text-xs px-1.5 py-1.5 text-center inline-flex items-center mr-2 dark:bg-green-600 dark:hover:bg-green-550 dark:focus:ring-green-700"
               @click="inputCheck(index)"
@@ -39,7 +41,7 @@
               </svg>
             </button>
             <button
-            v-else
+              v-else
               type="button"
               class="text-white bg-white-400 hover:bg-white-700 focus:ring-4 focus:outline-none focus:outline-none font-medium rounded-lg text-xs px-0 py-0 text-center inline-flex items-center mr-2 dark:bg-white-600 dark:hover:bg-white-100 dark:focus:ring-white-100"
               @click="inputCheck(index)"
@@ -58,13 +60,17 @@
                 />
               </svg>
             </button>
-            <span :style="`text-decoration: ${item.finished ? 'line-through' : ''}`">{{ item.description }}</span>
+            <span
+              :style="`text-decoration: ${item.finished ? 'line-through' : ''}`"
+              >{{ item.description }}</span
+            >
           </div>
 
           <div>
             <button
               type="button"
               class="text-white bg-yellow-400 hover:bg-yellow-700 focus:ring-4 focus:outline-none focus:ring-yellow-400 font-medium rounded-lg text-xs px-1.5 py-1.5 text-center inline-flex items-center mr-2 dark:bg-yellow-600 dark:hover:bg-yellow-550 dark:focus:ring-yellow-700"
+              @click="toggleModal('editAddModal', item, 'edit')"
             >
               <svg
                 class="white-svg"
@@ -81,6 +87,7 @@
             <button
               type="button"
               class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-1.5 py-1.5 text-center inline-flex items-center mr-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+              @click="toggleModal('deleteModal', item.id)"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -96,53 +103,93 @@
             </button>
           </div>
         </li>
+        <li
+          class="todo-list-item w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600"
+        >
+          <button @click="toggleModal('editAddModal', undefined, 'add')">
+            + New To-do
+          </button>
+        </li>
       </ul>
     </div>
+    <!-- Delete Modal -->
+    <div
+      class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center"
+      id="deleteModal"
+    >
+      <DeleteTodoDialog
+        :key="modalKey"
+        title="Delete Task"
+        text="Are you sure you want to delete this task?"
+        @close-dialog="toggleModal('deleteModal')"
+        @confirmed="deleteTodo"
+      />
+    </div>
+    <div
+      class="hidden opacity-25 fixed inset-0 z-40 bg-black"
+      :id="`deleteModal-backdrop`"
+    ></div>
+    <!-- Edit & Add Todo Modal -->
+    <div
+      class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center"
+      id="editAddModal"
+    >
+      <AddEditTaskDialog
+        :key="`add-${modalKey}`"
+        :operation="operation"
+        title="Delete Task"
+        text="Are you sure you want to delete this task?"
+        :description="currentTaskDesc"
+        @close-dialog="toggleModal('editAddModal')"
+        @confirmed-add="addCheckbox"
+        @confirmed-edit="editContent"
+      />
+    </div>
+    <div
+      class="hidden opacity-25 fixed inset-0 z-40 bg-black"
+      :id="`editAddModal-backdrop`"
+    ></div>
   </main>
 </template>
 
 <script>
 import { ref } from "vue";
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from "pinia";
 import axios from "axios";
 import { todoItemPath } from "@/services/apiPaths";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useTodoStore } from "@/stores/todo";
-import EditCheckboxDialog from "@/components/EditCheckboxDialog.vue";
-import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import DeleteTodoDialog from "@/components/DeleteTodoDialog.vue";
+import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
 
 export default {
   name: "TodoDetailView",
-  components: { EditCheckboxDialog, ConfirmDialog },
+  components: { DeleteTodoDialog, AddEditTaskDialog },
   setup() {
     const todoStore = useTodoStore();
     const route = useRoute();
-    const router = useRouter();
     const todos = ref([]);
-    const todoTitle = ref("");
-    const newCheckbox = ref("");
     const editDialog = ref("off");
     const sendContent = ref("");
     const sendIndex = ref(-1);
-    const editContentKey = ref(0);
-    const confirmKey = ref(0);
-    const confirmDialog = ref("off");
-    const confirmText = ref("");
-    const confirmOperation = ref("");
-    const todoId = Number(route.params.id);
+    const collectionId = Number(route.params.id);
     const originalData = ref([]);
+    const modalKey = ref(0);
+    const operation = ref(undefined);
+    const currentTask = ref(undefined);
+    const currentTaskDesc = ref(undefined);
 
     const { todoCats } = storeToRefs(todoStore);
 
     const getTodos = async () => {
-      const response = await axios.get(`${todoItemPath}${todoId}`);
+      const response = await axios.get(`${todoItemPath}${collectionId}`);
       if (response.status === 200) {
         todos.value = response.data;
         originalData.value = JSON.parse(JSON.stringify(response.data));
       } else todos.value = [];
     };
 
-    if (!isNaN(todoId)) {
+    if (!isNaN(collectionId)) {
       getTodos();
     }
 
@@ -153,78 +200,59 @@ export default {
         todos.value[checkedIndex]
       );
     };
-    const addCheckbox = () => {
-      if (newCheckbox.value.length > 0) {
-        const temp = {
-          description: newCheckbox.value,
-          finished: false,
-          todo_id: todoId,
-        };
-        todos.value.unshift(temp);
-        axios.post(todoItemPath, temp);
-        newCheckbox.value = "";
-      }
-    };
-    const removeCheckbox = (checkboxIndex) => {
-      axios.delete(`${todoItemPath}${todos.value[checkboxIndex].id}/`);
-      todos.value.splice(checkboxIndex, 1);
-    };
-    const saveChanges = () => {
-      axios.post(todoItemPath, todos.value[0]);
-    };
-    const cancelClicked = () => {
-      router.push("/");
-    };
-    const openEditDialog = (value, todoId) => {
-      editDialog.value = "in";
-      sendContent.value = value;
-      sendIndex.value = todoId;
-      editContentKey.value += 1;
-    };
-    const editContent = (data) => {
-      todos.value[data.index].description = data.description;
-      axios.put(
-        `${todoItemPath}${todos.value[data.index].id}/`,
-        todos.value[data.index]
-      );
-      editDialog.value = "out";
-    };
-    const openConfirmDialog = (text, op) => {
-      confirmOperation.value = op;
-      confirmText.value = text;
-      confirmKey.value += 1;
-      confirmDialog.value = "in";
+    const addCheckbox = (text) => {
+      console.log("Add: ", text);
+      const newTodo = {
+        description: text,
+        finished: false,
+        todo_id: collectionId,
+      };
+      axios.post(todoItemPath, newTodo);
+      toggleModal('editAddModal');
+      getTodos();
     };
     const deleteTodo = () => {
-      const tempArr = JSON.parse(JSON.stringify(todoStore.todoList));
-      tempArr.splice(todoId, 1);
-      todoStore.setTodoList(tempArr);
-      confirmDialog.value = "out";
-      router.push("/");
+      axios.delete(`${todoItemPath}${currentTask.value}/`);
+      toggleModal("deleteModal");
+      getTodos();
+      currentTask.value = undefined;
+    };
+    const editContent = (text) => {
+      currentTask.value.description = text;
+      axios.put(
+        `${todoItemPath}${currentTask.value.id}/`,
+        currentTask.value
+      );
+      currentTask.value = undefined;
+      toggleModal("editModal");
+      getTodos();
+    };
+    const toggleModal = (modalId, task, op) => {
+      operation.value = op;
+      currentTask.value = task;
+      if(task && task.description) currentTaskDesc.value = task.description;
+      modalKey.value += 1;
+      const dialog = document.getElementById(modalId);
+      dialog.classList.toggle("hidden");
+      document.getElementById(modalId + "-backdrop").classList.toggle("hidden");
+      document.getElementById(modalId).classList.toggle("flex");
+      document.getElementById(modalId + "-backdrop").classList.toggle("flex");
     };
     return {
       todos,
-      newCheckbox,
-      todoTitle,
       editDialog,
-      openEditDialog,
-      editContentKey,
       editContent,
       inputCheck,
       addCheckbox,
-      saveChanges,
-      confirmText,
-      openConfirmDialog,
-      confirmOperation,
-      cancelClicked,
-      removeCheckbox,
       sendContent,
       sendIndex,
-      confirmDialog,
-      confirmKey,
       deleteTodo,
       todoCats,
-      todoId
+      collectionId,
+      toggleModal,
+      modalKey,
+      operation,
+      currentTaskDesc
     };
   },
 };

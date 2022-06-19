@@ -51,7 +51,7 @@
           @click="$emit(`confirmed-${operation}`, content)"
           :disabled="!(content.length > 0)"
         >
-          {{ operation }}
+          {{ operation.toLocaleUpperCase() }}
         </button>
       </div>
     </div>

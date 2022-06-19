@@ -15,6 +15,7 @@
       <ul
         class="w-100 text-sm font-medium text-gray-900 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       >
+      
         <li
           v-for="(item, index) in todos"
           :key="`top-${item}`"
@@ -70,7 +71,7 @@
             <button
               type="button"
               class="text-white bg-yellow-400 hover:bg-yellow-700 focus:ring-4 focus:outline-none focus:ring-yellow-400 font-medium rounded-lg text-xs px-1.5 py-1.5 text-center inline-flex items-center mr-2 dark:bg-yellow-600 dark:hover:bg-yellow-550 dark:focus:ring-yellow-700"
-              @click="toggleModal('editAddModal', item, 'edit')"
+              @click="openEditDialog(item)"
             >
               <svg
                 class="white-svg"
@@ -87,7 +88,7 @@
             <button
               type="button"
               class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-1.5 py-1.5 text-center inline-flex items-center mr-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-              @click="toggleModal('deleteModal', item.id)"
+              @click="openDeleteDialog(item.id)"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,7 +107,7 @@
         <li
           class="todo-list-item w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600"
         >
-          <button @click="toggleModal('editAddModal', undefined, 'add')">
+          <button @click="openAddDialog()">
             + New To-do
           </button>
         </li>
@@ -200,37 +201,49 @@ export default {
         todos.value[checkedIndex]
       );
     };
-    const addCheckbox = (text) => {
-      console.log("Add: ", text);
+    const addCheckbox = async (text) => {
       const newTodo = {
         description: text,
         finished: false,
         todo_id: collectionId,
       };
-      axios.post(todoItemPath, newTodo);
       toggleModal('editAddModal');
+      await axios.post(todoItemPath, newTodo);
       getTodos();
     };
-    const deleteTodo = () => {
-      axios.delete(`${todoItemPath}${currentTask.value}/`);
+    const deleteTodo = async () => {
       toggleModal("deleteModal");
+      await axios.delete(`${todoItemPath}${currentTask.value}/`);
       getTodos();
       currentTask.value = undefined;
     };
-    const editContent = (text) => {
+    const openDeleteDialog = (taskId) => {
+      currentTask.value = taskId;
+      toggleModal('deleteModal');
+    }
+    const openAddDialog = () => {
+      operation.value = 'add';
+      currentTaskDesc.value = undefined;
+      currentTask.value = undefined;
+      toggleModal('editAddModal');
+    }
+    const openEditDialog = (task) => {
+      operation.value = 'edit';
+      currentTask.value = task;
+      currentTaskDesc.value = task.description;
+      toggleModal('editAddModal');
+    }
+    const editContent = async (text) => {
       currentTask.value.description = text;
-      axios.put(
+      toggleModal("editAddModal");
+      await axios.put(
         `${todoItemPath}${currentTask.value.id}/`,
         currentTask.value
       );
       currentTask.value = undefined;
-      toggleModal("editModal");
       getTodos();
     };
-    const toggleModal = (modalId, task, op) => {
-      operation.value = op;
-      currentTask.value = task;
-      if(task && task.description) currentTaskDesc.value = task.description;
+    const toggleModal = (modalId) => {
       modalKey.value += 1;
       const dialog = document.getElementById(modalId);
       dialog.classList.toggle("hidden");
@@ -241,7 +254,9 @@ export default {
     return {
       todos,
       editDialog,
+      openAddDialog,
       editContent,
+      openDeleteDialog,
       inputCheck,
       addCheckbox,
       sendContent,
@@ -250,6 +265,7 @@ export default {
       todoCats,
       collectionId,
       toggleModal,
+      openEditDialog,
       modalKey,
       operation,
       currentTaskDesc

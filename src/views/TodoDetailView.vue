@@ -7,9 +7,47 @@
             Mukhammed Musa
             <!-- <button @click="showDialog('add')">Add Todo</button> -->
           </h1>
-          <h3>
-            {{ (todoCats.find((el) => el.id == collectionId) ?? {}).title }}
-          </h3>
+          <div style="display: flex; justify-content: space-between">
+            <h3>
+              {{ currentCollection ? currentCollection.title : "" }}
+            </h3>
+            <div style="display: flex">
+              <div
+                style="display: flex; align-items: center; cursor: pointer"
+                class="delete-col-btn-container"
+                @click="openEditColDialog"
+              >
+                <svg
+                  class="white-svg"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7.127 22.564l-7.126 1.436 1.438-7.125 5.688 5.689zm-4.274-7.104l5.688 5.689 15.46-15.46-5.689-5.689-15.459 15.46z"
+                  />
+                </svg>
+              </div>
+              <div
+                style="display: flex; align-items: center; margin-left: 8px"
+                class="delete-col-btn-container"
+                @click="openDeleteColDialog()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  class="svg-btn white-svg dark:hover:bg-green-550 dark:focus:ring-green-700"
+                >
+                  <path
+                    d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <ul
@@ -70,7 +108,7 @@
             <button
               type="button"
               class="text-white bg-yellow-400 hover:bg-yellow-700 focus:ring-4 focus:outline-none focus:ring-yellow-400 font-medium rounded-lg text-xs px-1.5 py-1.5 text-center inline-flex items-center mr-2 dark:bg-yellow-600 dark:hover:bg-yellow-550 dark:focus:ring-yellow-700"
-              @click="toggleModal('editAddModal', item, 'edit')"
+              @click="openEditDialog(item)"
             >
               <svg
                 class="white-svg"
@@ -87,7 +125,7 @@
             <button
               type="button"
               class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-1.5 py-1.5 text-center inline-flex items-center mr-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
-              @click="toggleModal('deleteModal', item.id)"
+              @click="openDeleteDialog(item.id)"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -106,8 +144,11 @@
         <li
           class="todo-list-item w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600"
         >
-          <button @click="toggleModal('editAddModal', undefined, 'add')">
-            + New To-do
+          <button class="add-todo-btn" @click="openAddDialog()">
+            <div>
+              <span class="plus-sign">+</span>
+              <span class="add-new-todo">New To-do</span>
+            </div>
           </button>
         </li>
       </ul>
@@ -129,6 +170,23 @@
       class="hidden opacity-25 fixed inset-0 z-40 bg-black"
       :id="`deleteModal-backdrop`"
     ></div>
+    <!-- Delete Collection Modal -->
+    <div
+      class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center"
+      id="deleteCollectionModal"
+    >
+      <DeleteTodoDialog
+        :key="modalKey"
+        title="Delete Collection"
+        text="Are you sure you want to delete this collection?"
+        @close-dialog="toggleModal('deleteCollectionModal')"
+        @confirmed="deleteCollection"
+      />
+    </div>
+    <div
+      class="hidden opacity-25 fixed inset-0 z-40 bg-black"
+      :id="`deleteCollectionModal-backdrop`"
+    ></div>
     <!-- Edit & Add Todo Modal -->
     <div
       class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center"
@@ -137,8 +195,7 @@
       <AddEditTaskDialog
         :key="`add-${modalKey}`"
         :operation="operation"
-        title="Delete Task"
-        text="Are you sure you want to delete this task?"
+        name="To-do"
         :description="currentTaskDesc"
         @close-dialog="toggleModal('editAddModal')"
         @confirmed-add="addCheckbox"
@@ -149,15 +206,33 @@
       class="hidden opacity-25 fixed inset-0 z-40 bg-black"
       :id="`editAddModal-backdrop`"
     ></div>
+    <!-- Collection Modal -->
+    <div
+      class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center"
+      id="editCollection"
+    >
+      <AddEditTaskDialog
+        :key="`edit-${modalKey}-collection`"
+        operation="edit"
+        name="Collection Name"
+        :description="currentCollection ? currentCollection.title : ''"
+        @close-dialog="toggleModal('editCollection')"
+        @confirmed-edit="editCollectionFunc"
+      />
+    </div>
+    <div
+      class="hidden opacity-25 fixed inset-0 z-40 bg-black"
+      :id="`editCollection-backdrop`"
+    ></div>
   </main>
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 import { storeToRefs } from "pinia";
 import axios from "axios";
-import { todoItemPath } from "@/services/apiPaths";
-import { useRoute } from "vue-router";
+import { todoItemPath, todoPath } from "@/services/apiPaths";
+import { useRoute, useRouter } from "vue-router";
 import { useTodoStore } from "@/stores/todo";
 import DeleteTodoDialog from "@/components/DeleteTodoDialog.vue";
 import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
@@ -178,8 +253,16 @@ export default {
     const operation = ref(undefined);
     const currentTask = ref(undefined);
     const currentTaskDesc = ref(undefined);
+    const currentCollection = ref(undefined);
+    const router = useRouter();
 
     const { todoCats } = storeToRefs(todoStore);
+
+    watchEffect(() => {
+      currentCollection.value = todoCats.value.find(
+        (el) => el.id == collectionId
+      );
+    });
 
     const getTodos = async () => {
       const response = await axios.get(`${todoItemPath}${collectionId}`);
@@ -200,37 +283,81 @@ export default {
         todos.value[checkedIndex]
       );
     };
-    const addCheckbox = (text) => {
-      console.log("Add: ", text);
+    const addCheckbox = async (text) => {
       const newTodo = {
         description: text,
         finished: false,
         todo_id: collectionId,
       };
-      axios.post(todoItemPath, newTodo);
-      toggleModal('editAddModal');
+      toggleModal("editAddModal");
+      await axios.post(todoItemPath, newTodo);
       getTodos();
     };
-    const deleteTodo = () => {
-      axios.delete(`${todoItemPath}${currentTask.value}/`);
+    const deleteTodo = async () => {
       toggleModal("deleteModal");
+      await axios.delete(`${todoItemPath}${currentTask.value}/`);
       getTodos();
       currentTask.value = undefined;
     };
-    const editContent = (text) => {
+    const openDeleteDialog = (taskId) => {
+      currentTask.value = taskId;
+      toggleModal("deleteModal");
+    };
+    const openAddDialog = () => {
+      operation.value = "add";
+      currentTaskDesc.value = undefined;
+      currentTask.value = undefined;
+      toggleModal("editAddModal");
+    };
+    const openEditDialog = (task) => {
+      operation.value = "edit";
+      currentTask.value = task;
+      currentTaskDesc.value = task.description;
+      toggleModal("editAddModal");
+    };
+    const editContent = async (text) => {
       currentTask.value.description = text;
-      axios.put(
+      toggleModal("editAddModal");
+      await axios.put(
         `${todoItemPath}${currentTask.value.id}/`,
         currentTask.value
       );
       currentTask.value = undefined;
-      toggleModal("editModal");
       getTodos();
     };
-    const toggleModal = (modalId, task, op) => {
-      operation.value = op;
-      currentTask.value = task;
-      if(task && task.description) currentTaskDesc.value = task.description;
+    const openEditColDialog = () => {
+      toggleModal("editCollection");
+    };
+
+    const editCollectionFunc = async (title) => {
+      currentCollection.value.title = title;
+      toggleModal("editCollection");
+      await axios.put(
+        `${todoPath}${currentCollection.value.id}/`,
+        currentCollection.value
+      );
+      getCollections();
+    };
+
+    const getCollections = async () => {
+      const response = await axios.get(todoPath);
+      if (response.status === 200) {
+        todoStore.setTodoCats(response.data);
+      }
+    };
+
+    const openDeleteColDialog = () => {
+      toggleModal("deleteCollectionModal");
+    };
+
+    const deleteCollection = async () => {
+      toggleModal("deleteCollectionModal");
+      await axios.delete(`${todoPath}${collectionId}/`);
+      await getCollections();
+      router.push("/");
+    };
+
+    const toggleModal = (modalId) => {
       modalKey.value += 1;
       const dialog = document.getElementById(modalId);
       dialog.classList.toggle("hidden");
@@ -238,21 +365,30 @@ export default {
       document.getElementById(modalId).classList.toggle("flex");
       document.getElementById(modalId + "-backdrop").classList.toggle("flex");
     };
+
     return {
+      openDeleteColDialog,
       todos,
       editDialog,
+      openAddDialog,
       editContent,
+      openDeleteDialog,
+      openEditColDialog,
+      deleteCollection,
       inputCheck,
       addCheckbox,
       sendContent,
       sendIndex,
       deleteTodo,
+      currentCollection,
+      editCollectionFunc,
       todoCats,
       collectionId,
       toggleModal,
+      openEditDialog,
       modalKey,
       operation,
-      currentTaskDesc
+      currentTaskDesc,
     };
   },
 };

@@ -15,7 +15,6 @@
       <ul
         class="w-100 text-sm font-medium text-gray-900 bg-white border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       >
-      
         <li
           v-for="(item, index) in todos"
           :key="`top-${item}`"
@@ -107,8 +106,11 @@
         <li
           class="todo-list-item w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600"
         >
-          <button @click="openAddDialog()">
-            + New To-do
+          <button class="add-todo-btn" @click="openAddDialog()">
+            <div>
+              <span class="plus-sign">+</span>
+              <span class="add-new-todo">New To-do</span>
+            </div>
           </button>
         </li>
       </ul>
@@ -207,7 +209,7 @@ export default {
         finished: false,
         todo_id: collectionId,
       };
-      toggleModal('editAddModal');
+      toggleModal("editAddModal");
       await axios.post(todoItemPath, newTodo);
       getTodos();
     };
@@ -219,20 +221,20 @@ export default {
     };
     const openDeleteDialog = (taskId) => {
       currentTask.value = taskId;
-      toggleModal('deleteModal');
-    }
+      toggleModal("deleteModal");
+    };
     const openAddDialog = () => {
-      operation.value = 'add';
+      operation.value = "add";
       currentTaskDesc.value = undefined;
       currentTask.value = undefined;
-      toggleModal('editAddModal');
-    }
+      toggleModal("editAddModal");
+    };
     const openEditDialog = (task) => {
-      operation.value = 'edit';
+      operation.value = "edit";
       currentTask.value = task;
       currentTaskDesc.value = task.description;
-      toggleModal('editAddModal');
-    }
+      toggleModal("editAddModal");
+    };
     const editContent = async (text) => {
       currentTask.value.description = text;
       toggleModal("editAddModal");
@@ -268,7 +270,7 @@ export default {
       openEditDialog,
       modalKey,
       operation,
-      currentTaskDesc
+      currentTaskDesc,
     };
   },
 };

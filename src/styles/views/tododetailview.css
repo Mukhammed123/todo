@@ -38,3 +38,16 @@ h3 {
     align-items: center;
     display: flex;
 }
+
+.add-new-todo {
+    font-size: large;
+    color: rgb(40, 103, 213);
+    font-weight: 500;
+    position: relative;
+    top: -3px;
+}
+
+.add-todo-btn {
+    display: flex;
+    align-items: flex-end;
+}

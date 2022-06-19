@@ -64,15 +64,15 @@ import { ref, toRef, watchEffect } from "vue";
 export default {
   name: "AddEditTaskDialog",
   props: {
-    title: { type: String, default: '' },
-    operation: { type: String, default: '' },
-    description: {type: String, default: ''}
+    title: { type: String, default: "" },
+    operation: { type: String, default: "" },
+    description: { type: String, default: "" },
   },
   setup(props) {
     const content = ref("");
     content.value = props.description;
     return {
-      content
+      content,
     };
   },
 };

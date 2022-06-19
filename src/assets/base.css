@@ -127,3 +127,25 @@ aside > div {
   text-align: center;
   margin-right: 3px;
 }
+
+.collaections-title {
+  font-size: x-large;
+  color: rgb(63, 63, 63);
+}
+
+.add-new-todo {
+  font-size: large;
+  color: rgb(40, 103, 213);
+  font-weight: 500;
+  position: relative;
+  top: -3px;
+}
+
+.add-todo-btn {
+  display: flex;
+  align-items: flex-end;
+}
+
+.new-collection-li {
+  margin: 0;
+}

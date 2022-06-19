@@ -5,6 +5,30 @@
         class="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800"
       >
         <ul class="space-y-2">
+          <li><span class="collaections-title">Collections</span></li>
+          <hr />
+          <li>
+            <router-link
+              :to="`/`"
+              class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              <svg
+                class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 13v10h-6v-6h-6v6h-6v-10h-3l12-12 12 12h-3zm-1-5.907v-5.093h-3v2.093l3 3z"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                />
+              </svg>
+              <span class="flex-1 ml-3">Home</span>
+            </router-link>
+          </li>
           <li v-for="(cat, index) in todoCats" :key="`${cat.title}-${index}`">
             <router-link
               :to="`/todo-detail/${cat.id}`"
@@ -26,35 +50,109 @@
               >
             </router-link>
           </li>
+          <li class="new-collection-li px-2 py-0" style="margin: 0">
+            <button class="add-todo-btn" @click="openAddDialog">
+              <div>
+                <span class="plus-sign">+</span>
+                <span class="add-new-todo">New Collection</span>
+              </div>
+            </button>
+          </li>
         </ul>
       </div>
+      <div
+        class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center"
+        id="addCollectionModel"
+      >
+        <AddEditTaskDialog
+          name="Collection"
+          :key="`add-edit-${modalKey}`"
+          :operation="operation"
+          :description="collectionTitle"
+          @close-dialog="toggleModal('addCollectionModel')"
+          @confirmed-add="addCollection"
+        />
+      </div>
+      <div
+        class="hidden opacity-25 fixed inset-0 z-40 bg-black"
+        :id="`addCollectionModel-backdrop`"
+      ></div>
     </aside>
-    <RouterView :key="`${route.path}-${routerKey}`" />
+    <RouterView :key="route.path" />
   </div>
 </template>
 
-<script setup>
+<script>
 import { onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useTodoStore } from "@/stores/todo";
 import axios from "axios";
 import { todoPath } from "@/services/apiPaths";
 import { useRoute } from "vue-router";
+import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
 
-let todoCats = ref([]);
-const todoStore = useTodoStore();
-const route = useRoute();
-const routerKey = ref(0);
+export default {
+  name: "App",
+  components: {
+    AddEditTaskDialog,
+  },
+  setup() {
+    const todoStore = useTodoStore();
+    const { todoCats } = storeToRefs(todoStore);
+    const route = useRoute();
+    const modalKey = ref(0);
+    const operation = ref(undefined);
+    const collectionTitle = ref("");
 
-onMounted(async () => {
-  const response = await axios.get(todoPath);
-  if (response.status === 200) {
-    todoCats.value = response.data;
-    todoStore.setTodoCats(response.data);
-  }
-});
+    onMounted(() => {
+      getCollections();
+    });
 
-const updateRouterKey = () => {
-  routerKey.value += 1;
+    const getCollections = async () => {
+      const response = await axios.get(todoPath);
+      if (response.status === 200) {
+        todoCats.value = response.data;
+        todoStore.setTodoCats(response.data);
+      }
+    };
+
+    const openAddDialog = () => {
+      operation.value = "add";
+      toggleModal("addCollectionModel");
+    };
+    const addCollection = async (text) => {
+      const newCollection = {
+        title: text,
+      };
+      toggleModal("addCollectionModel");
+      await axios.post(todoPath, newCollection);
+      const response = await axios.get(todoPath);
+      if (response.status === 200) {
+        todoCats.value = response.data;
+        todoStore.setTodoCats(response.data);
+      }
+    };
+
+    const toggleModal = (modalId) => {
+      modalKey.value += 1;
+      const dialog = document.getElementById(modalId);
+      dialog.classList.toggle("hidden");
+      document.getElementById(modalId + "-backdrop").classList.toggle("hidden");
+      document.getElementById(modalId).classList.toggle("flex");
+      document.getElementById(modalId + "-backdrop").classList.toggle("flex");
+    };
+
+    return {
+      todoCats,
+      route,
+      modalKey,
+      operation,
+      collectionTitle,
+      openAddDialog,
+      addCollection,
+      toggleModal,
+    };
+  },
 };
 </script>
 

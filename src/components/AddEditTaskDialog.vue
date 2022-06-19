@@ -8,7 +8,7 @@
       <div
         class="flex items-start justify-between p-5 pb-1 border-b border-solid border-slate-200 rounded-t"
       >
-        <h3 class="text-3xl font-semibold">{{ operation }} To-do</h3>
+        <h3 class="text-3xl font-semibold">{{ operation }} {{ name }}</h3>
         <button class="p-2 m-0 pt-0" @click="$emit('close-dialog')">
           <span style="font-size: x-large; display: flex; align-items: start">
             ×
@@ -64,9 +64,9 @@ import { ref, toRef, watchEffect } from "vue";
 export default {
   name: "AddEditTaskDialog",
   props: {
-    title: { type: String, default: "" },
     operation: { type: String, default: "" },
     description: { type: String, default: "" },
+    name: { type: String, default: "" },
   },
   setup(props) {
     const content = ref("");

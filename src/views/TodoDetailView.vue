@@ -256,7 +256,7 @@ export default {
     const currentCollection = ref(undefined);
     const router = useRouter();
 
-    const { todoCats } = storeToRefs(todoStore);
+    const { todoCats, accessToken } = storeToRefs(todoStore);
 
     watchEffect(() => {
       currentCollection.value = todoCats.value.find(
@@ -265,7 +265,12 @@ export default {
     });
 
     const getTodos = async () => {
-      const response = await axios.get(`${todoItemPath}${collectionId}`);
+      const response = await axios.get(`${todoItemPath}${collectionId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
       if (response.status === 200) {
         todos.value = response.data;
         originalData.value = JSON.parse(JSON.stringify(response.data));
@@ -280,7 +285,13 @@ export default {
       todos.value[checkedIndex].finished = !todos.value[checkedIndex].finished;
       axios.put(
         `${todoItemPath}${todos.value[checkedIndex].id}/`,
-        todos.value[checkedIndex]
+        todos.value[checkedIndex],
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+        }
       );
     };
     const addCheckbox = async (text) => {
@@ -290,12 +301,22 @@ export default {
         todo_id: collectionId,
       };
       toggleModal("editAddModal");
-      await axios.post(todoItemPath, newTodo);
+      await axios.post(todoItemPath, newTodo, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
       getTodos();
     };
     const deleteTodo = async () => {
       toggleModal("deleteModal");
-      await axios.delete(`${todoItemPath}${currentTask.value}/`);
+      await axios.delete(`${todoItemPath}${currentTask.value}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
       getTodos();
       currentTask.value = undefined;
     };
@@ -320,7 +341,13 @@ export default {
       toggleModal("editAddModal");
       await axios.put(
         `${todoItemPath}${currentTask.value.id}/`,
-        currentTask.value
+        currentTask.value,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+        }
       );
       currentTask.value = undefined;
       getTodos();
@@ -334,13 +361,24 @@ export default {
       toggleModal("editCollection");
       await axios.put(
         `${todoPath}${currentCollection.value.id}/`,
-        currentCollection.value
+        currentCollection.value,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+        }
       );
       getCollections();
     };
 
     const getCollections = async () => {
-      const response = await axios.get(todoPath);
+      const response = await axios.get(todoPath, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
       if (response.status === 200) {
         todoStore.setTodoCats(response.data);
       }
@@ -352,7 +390,12 @@ export default {
 
     const deleteCollection = async () => {
       toggleModal("deleteCollectionModal");
-      await axios.delete(`${todoPath}${collectionId}/`);
+      await axios.delete(`${todoPath}${collectionId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
       await getCollections();
       router.push("/");
     };

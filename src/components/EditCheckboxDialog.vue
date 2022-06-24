@@ -23,7 +23,9 @@
 
 <script>
 import { ref, toRef } from "vue";
-export default {
+import { defineComponent } from "vue";
+
+export default defineComponent({
   name: "EditCheckboxDialog",
   props: {
     openEditDialog: { type: String, default: "off" },
@@ -57,7 +59,7 @@ export default {
       editContentFunc,
     };
   },
-};
+});
 </script>
 
 <style scoped>

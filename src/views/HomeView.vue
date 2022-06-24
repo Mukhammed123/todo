@@ -3,12 +3,10 @@
 </template>
 
 <script>
-import TodoCard from "@/components/TodoCard.vue";
-import ConfirmDialog from "@/components/ConfirmDialog.vue";
+import { useRouter } from "vue-router";
 
 export default {
   name: "HomeView",
-  components: { TodoCard, ConfirmDialog },
   setup() {
     return {};
   },

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <aside class="w-64" aria-label="Sidebar">
+    <aside v-if="isLoggedIn" class="w-64" aria-label="Sidebar">
       <div
         class="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800"
       >
@@ -58,6 +58,24 @@
               </div>
             </button>
           </li>
+          <li>
+            <button class="add-todo-btn" @click="logout">
+              <div>
+                <svg
+                  width="24"
+                  height="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                >
+                  <path
+                    d="M11 21h8v-2l1-1v4h-9v2l-10-3v-18l10-3v2h9v5l-1-1v-3h-8v18zm10.053-9l-3.293-3.293.707-.707 4.5 4.5-4.5 4.5-.707-.707 3.293-3.293h-9.053v-1h9.053z"
+                  />
+                </svg>
+                <span class="add-new-todo">Log out</span>
+              </div>
+            </button>
+          </li>
         </ul>
       </div>
       <div
@@ -83,12 +101,12 @@
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { storeToRefs } from "pinia";
 import { useTodoStore } from "@/stores/todo";
 import axios from "axios";
-import { todoPath } from "@/services/apiPaths";
-import { useRoute } from "vue-router";
+import { todoPath, checkPath } from "@/services/apiPaths";
+import { useRoute, useRouter } from "vue-router";
 import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
 
 export default {
@@ -98,18 +116,49 @@ export default {
   },
   setup() {
     const todoStore = useTodoStore();
-    const { todoCats } = storeToRefs(todoStore);
+    const { todoCats, isLoggedIn, accessToken } = storeToRefs(todoStore);
     const route = useRoute();
     const modalKey = ref(0);
     const operation = ref(undefined);
     const collectionTitle = ref("");
+    const router = useRouter();
 
-    onMounted(() => {
-      getCollections();
+    onMounted(async () => {
+      const accessTokenLS = localStorage.getItem("accessToken");
+      if ((accessTokenLS || "").length > 0) {
+        console.log(accessTokenLS);
+        const response = await axios.post(
+          checkPath,
+          {},
+          {
+            headers: {
+              "Content-Type": "Application/json",
+              Authorization: `Bearer ${accessTokenLS}`,
+            },
+          }
+        );
+        if (response.status === 200) {
+          todoStore.setIsLoggedIn(true);
+          todoStore.setAccessToken(accessTokenLS);
+          getCollections();
+          router.push("/");
+        } else {
+          logout();
+        }
+      } else logout();
+    });
+
+    watchEffect(() => {
+      if (isLoggedIn.value) getCollections();
     });
 
     const getCollections = async () => {
-      const response = await axios.get(todoPath);
+      const response = await axios.get(todoPath, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
       if (response.status === 200) {
         todoCats.value = response.data;
         todoStore.setTodoCats(response.data);
@@ -125,8 +174,18 @@ export default {
         title: text,
       };
       toggleModal("addCollectionModel");
-      await axios.post(todoPath, newCollection);
-      const response = await axios.get(todoPath);
+      await axios.post(todoPath, newCollection, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
+      const response = await axios.get(todoPath, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken.value}`,
+        },
+      });
       if (response.status === 200) {
         todoCats.value = response.data;
         todoStore.setTodoCats(response.data);
@@ -142,7 +201,16 @@ export default {
       document.getElementById(modalId + "-backdrop").classList.toggle("flex");
     };
 
+    const logout = async () => {
+      todoStore.setIsLoggedIn(false);
+      todoStore.setAccessToken(undefined);
+      todoStore.setRefreshToken(undefined);
+      localStorage.clear();
+      router.push("/login");
+    };
+
     return {
+      isLoggedIn,
       todoCats,
       route,
       modalKey,
@@ -151,6 +219,7 @@ export default {
       openAddDialog,
       addCollection,
       toggleModal,
+      logout,
     };
   },
 };

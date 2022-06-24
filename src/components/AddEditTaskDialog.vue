@@ -60,8 +60,9 @@
 
 <script>
 import { ref, toRef, watchEffect } from "vue";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "AddEditTaskDialog",
   props: {
     operation: { type: String, default: "" },
@@ -75,7 +76,7 @@ export default {
       content,
     };
   },
-};
+});
 </script>
 
 <style scoped>

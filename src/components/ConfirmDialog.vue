@@ -21,7 +21,9 @@
 </template>
 
 <script>
-export default {
+import { defineComponent } from "vue";
+
+export default defineComponent({
   name: "ConfirmDialog",
   props: {
     openDialog: { type: String, default: "off" },
@@ -29,7 +31,7 @@ export default {
     receivedText: { type: String, default: "" },
     operation: { type: String, default: "" },
   },
-};
+});
 </script>
 
 <style scoped>

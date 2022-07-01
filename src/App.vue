@@ -74,7 +74,7 @@
                     d="M11 21h8v-2l1-1v4h-9v2l-10-3v-18l10-3v2h9v5l-1-1v-3h-8v18zm10.053-9l-3.293-3.293.707-.707 4.5 4.5-4.5 4.5-.707-.707 3.293-3.293h-9.053v-1h9.053z"
                   />
                 </svg>
-                <span style="margin-left: 3px" class="add-new-todo"
+                <span style="margin-left: 3px; padding-top: 2px" class="add-new-todo"
                   >Log out</span
                 >
               </div>
@@ -207,7 +207,6 @@ export default {
           todoStore.setIsLoggedIn(true);
           todoStore.setAccessToken(accessTokenLS);
           getCollections();
-          router.push("/");
         } else {
           logout();
         }

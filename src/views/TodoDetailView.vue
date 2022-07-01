@@ -283,7 +283,7 @@
 </template>
 
 <script>
-import { ref, watchEffect } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { storeToRefs } from "pinia";
 import axios from "axios";
 import { todoItemPath, todoPath } from "@/services/apiPaths";
@@ -316,11 +316,14 @@ export default {
 
     const { todoCats, accessToken } = storeToRefs(todoStore);
 
-    watchEffect(() => {
+    onMounted(() => {
+      watchEffect(() => {
       currentCollection.value = todoCats.value.find(
         (el) => el.id == collectionId
       );
+      if(accessToken.value.length > 0) getTodos()
     });
+    })
 
     const getTodos = async () => {
       try {
@@ -344,10 +347,6 @@ export default {
         hideSnackbar.value = false;
       }
     };
-
-    if (!isNaN(collectionId)) {
-      getTodos();
-    }
 
     const inputCheck = async (checkedIndex) => {
       try {

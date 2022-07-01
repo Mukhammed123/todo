@@ -86,6 +86,7 @@ body {
 }
 main {
   height: 100%;
+  width: calc(100% - 256px);
 }
 .dialog-fade-in {
   animation: fadein 0.2s linear 1 forwards;
@@ -97,6 +98,9 @@ main {
   display: none !important;
 }
 
+aside {
+  width: 256px !important;
+}
 @keyframes fadein {
   0% { opacity: 0; }
   50% { opacity: 0.5; }

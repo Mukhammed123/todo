@@ -4,7 +4,7 @@
       <div
         class="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800"
       >
-        <ul class="space-y-2">
+        <ul class="space-y-2" style="height: 100%; position: relative">
           <li><span class="collaections-title">Collections</span></li>
           <hr />
           <li>
@@ -44,9 +44,9 @@
                 <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
               </svg>
               <span class="flex-1 ml-3">{{ cat.title }}</span>
-              <span
+              <span v-if="Number(cat.num_tasks) > 0"
                 class="inline-flex justify-center items-center p-3 ml-3 w-3 h-3 text-sm font-medium text-blue-600 bg-blue-200 rounded-full dark:bg-blue-900 dark:text-blue-200"
-                >3</span
+                >{{ cat.num_tasks }}</span
               >
             </router-link>
           </li>
@@ -58,9 +58,9 @@
               </div>
             </button>
           </li>
-          <li>
-            <button class="add-todo-btn" @click="logout">
-              <div>
+          <li style="position: absolute; bottom: 0; width: 100%">
+            <button class="add-todo-btn" style="width: 100%;" @click="logout">
+              <div style="display: flex; padding: 8px; align-items: start">
                 <svg
                   width="24"
                   height="24"
@@ -69,10 +69,11 @@
                   clip-rule="evenodd"
                 >
                   <path
+                    fill="rgb(40, 103, 213)"
                     d="M11 21h8v-2l1-1v4h-9v2l-10-3v-18l10-3v2h9v5l-1-1v-3h-8v18zm10.053-9l-3.293-3.293.707-.707 4.5 4.5-4.5 4.5-.707-.707 3.293-3.293h-9.053v-1h9.053z"
                   />
                 </svg>
-                <span class="add-new-todo">Log out</span>
+                <span style="margin-left: 3px" class="add-new-todo">Log out</span>
               </div>
             </button>
           </li>
@@ -126,7 +127,6 @@ export default {
     onMounted(async () => {
       const accessTokenLS = localStorage.getItem("accessToken");
       if ((accessTokenLS || "").length > 0) {
-        console.log(accessTokenLS);
         const response = await axios.post(
           checkPath,
           {},

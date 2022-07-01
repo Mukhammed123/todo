@@ -1,40 +1,14 @@
 main {
-    width: calc(100% - 200px);
-}
+    height: 100%;
+    width: 100%;
+    background-image: url('../main.jpeg'), linear-gradient(90deg, rgba(54,47,177,0.5480567226890756) 2%, rgba(117,43,175,0.5676645658263305) 40%, rgba(75,113,205,0.562062324929972) 98%);
+    background-blend-mode: overlay;
+    background-position: center;
+    position: relative;
+    }
 
-.title-container {
-    display: flex;
-    align-items: end;
-    height: 150px;
+h1 {
     color: white;
-    background-image: url('repeat-img.jpeg');
-}
-
-.text-container {
-    margin-left: 1.5em;
-}
-
-.title-container h1 {
-    font-size: 35px;
-}
-
-h3 {
-    font-size: 25px;
-    margin-bottom: .5em;
-}
-
-.todo-list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.description-container {
-    display: flex;
-    justify-content: center;
-}
-
-.description-container span {
-    align-items: center;
-    display: flex;
+    font-size: 7rem;
+    text-align: center;
 }

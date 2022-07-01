@@ -7,7 +7,8 @@ main {
     align-items: end;
     height: 150px;
     color: white;
-    background-image: url('../repeat-img.jpeg');
+    background-image: url('../repeat-img.jpeg'), linear-gradient(90deg, rgba(54,47,177,0.5480567226890756) 2%, rgba(117,43,175,0.5676645658263305) 40%, rgba(75,113,205,0.562062324929972) 98%);
+    background-blend-mode: overlay;
 }
 
 .text-container {

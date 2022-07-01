@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 export const useTodoStore = defineStore({
   id: "todo",
   state: () => ({
+    username: "",
     todoCats: [],
     accessToken: "",
     refreshToken: "",
@@ -12,6 +13,9 @@ export const useTodoStore = defineStore({
     getTodoList: (state) => state.todoList,
   },
   actions: {
+    setUsername(value) {
+      this.username = value;
+    },
     setIsLoggedIn(value) {
       this.isLoggedIn = value;
     },

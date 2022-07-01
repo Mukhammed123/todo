@@ -224,6 +224,61 @@
       class="hidden opacity-25 fixed inset-0 z-40 bg-black"
       :id="`editCollection-backdrop`"
     ></div>
+    <div
+      style="
+        position: absolute;
+        bottom: 0px;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      "
+      class="snackbar-container"
+    >
+      <div
+        id="errorSnackbar"
+        style="height: 50px"
+        :class="`${
+          hideSnackbar ? 'hidden' : ''
+        } flex p-4 mb-4 bg-red-100 rounded-lg dark:bg-red-200`"
+        role="alert"
+      >
+        <svg
+          class="flex-shrink-0 w-5 h-5 text-red-700 dark:text-red-800"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <div class="ml-3 text-sm font-medium text-red-700 dark:text-red-800">
+          Error Message: {{ snackbrMessage }}
+        </div>
+        <button
+          type="button"
+          class="ml-auto -mx-1.5 -my-1.5 bg-red-100 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8 dark:bg-red-200 dark:text-red-600 dark:hover:bg-red-300"
+          @click="hideSnackbar = true"
+          aria-label="Close"
+        >
+          <span class="sr-only">Close</span>
+          <svg
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -255,6 +310,8 @@ export default {
     const currentTask = ref(undefined);
     const currentTaskDesc = ref(undefined);
     const currentCollection = ref(undefined);
+    const hideSnackbar = ref(true);
+    const snackbrMessage = ref("");
     const router = useRouter();
 
     const { todoCats, accessToken } = storeToRefs(todoStore);
@@ -266,35 +323,49 @@ export default {
     });
 
     const getTodos = async () => {
-      const response = await axios.get(`${todoItemPath}${collectionId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
-        },
-      });
-      if (response.status === 200) {
-        todos.value = response.data;
-        originalData.value = JSON.parse(JSON.stringify(response.data));
-        updateCounter(currentCollection.value.title, todos.value.length);
-      } else todos.value = [];
+      try {
+        const response = await axios.get(`${todoItemPath}${collectionId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+        });
+        if (response.status === 200) {
+          todos.value = response.data;
+          originalData.value = JSON.parse(JSON.stringify(response.data));
+          updateCounter(currentCollection.value.title, todos.value.filter(el=>el.finished === false).length);
+        }
+      } catch (err) {
+        todos.value = [];
+        snackbrMessage.value = err.message;
+        hideSnackbar.value = false;
+      }
     };
 
     if (!isNaN(collectionId)) {
       getTodos();
     }
 
-    const inputCheck = (checkedIndex) => {
-      todos.value[checkedIndex].finished = !todos.value[checkedIndex].finished;
-      axios.put(
-        `${todoItemPath}${todos.value[checkedIndex].id}/`,
-        todos.value[checkedIndex],
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
-          },
-        }
-      );
+    const inputCheck = async (checkedIndex) => {
+      try {
+        todos.value[checkedIndex].finished =
+          !todos.value[checkedIndex].finished;
+        await axios.put(
+          `${todoItemPath}${todos.value[checkedIndex].id}/`,
+          todos.value[checkedIndex],
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.value}`,
+            },
+          }
+        );
+      } catch (err) {
+        todos.value[checkedIndex].finished =
+          !todos.value[checkedIndex].finished;
+        snackbrMessage.value = err.message;
+        hideSnackbar.value = false;
+      }
     };
     const addCheckbox = async (text) => {
       const newTodo = {
@@ -303,23 +374,33 @@ export default {
         todo_id: collectionId,
       };
       toggleModal("editAddModal");
-      await axios.post(todoItemPath, newTodo, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
-        },
-      });
-      getTodos();
+      try {
+        await axios.post(todoItemPath, newTodo, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+        });
+        getTodos();
+      } catch (err) {
+        snackbrMessage.value = err.message;
+        hideSnackbar.value = false;
+      }
     };
     const deleteTodo = async () => {
       toggleModal("deleteModal");
-      await axios.delete(`${todoItemPath}${currentTask.value}/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken.value}`,
-        },
-      });
-      getTodos();
+      try {
+        await axios.delete(`${todoItemPath}${currentTask.value}/`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken.value}`,
+          },
+        });
+        getTodos();
+      } catch (err) {
+        snackbrMessage.value = err.message;
+        hideSnackbar.value = false;
+      }
       currentTask.value = undefined;
     };
     const openDeleteDialog = (taskId) => {
@@ -341,18 +422,24 @@ export default {
     const editContent = async (text) => {
       currentTask.value.description = text;
       toggleModal("editAddModal");
-      await axios.put(
-        `${todoItemPath}${currentTask.value.id}/`,
-        currentTask.value,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
-          },
-        }
-      );
+      try {
+        await axios.put(
+          `${todoItemPath}${currentTask.value.id}/`,
+          currentTask.value,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.value}`,
+            },
+          }
+        );
+
+        getTodos();
+      } catch (err) {
+        snackbrMessage.value = err.message;
+        hideSnackbar.value = false;
+      }
       currentTask.value = undefined;
-      getTodos();
     };
     const openEditColDialog = () => {
       toggleModal("editCollection");
@@ -361,17 +448,22 @@ export default {
     const editCollectionFunc = async (title) => {
       currentCollection.value.title = title;
       toggleModal("editCollection");
-      await axios.put(
-        `${todoPath}${currentCollection.value.id}/`,
-        currentCollection.value,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken.value}`,
-          },
-        }
-      );
-      getCollections();
+      try {
+        await axios.put(
+          `${todoPath}${currentCollection.value.id}/`,
+          currentCollection.value,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken.value}`,
+            },
+          }
+        );
+        getCollections();
+      } catch (err) {
+        snackbrMessage.value = err.message;
+        hideSnackbar.value = false;
+      }
     };
 
     const getCollections = async () => {
@@ -415,7 +507,9 @@ export default {
     };
 
     return {
+      snackbrMessage,
       openDeleteColDialog,
+      hideSnackbar,
       todos,
       editDialog,
       openAddDialog,

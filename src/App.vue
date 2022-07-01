@@ -153,12 +153,6 @@ export default {
       } else logout();
     });
 
-    watch(() => {
-      // if (isLoggedIn.value) getCollections();
-      console.log(todosCounter.value);
-      console.log(todoStore.todosCounter);
-    });
-
     const getCollections = async () => {
       const response = await axios.get(todoPath, {
         headers: {

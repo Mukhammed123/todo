@@ -321,7 +321,7 @@ export default {
       currentCollection.value = todoCats.value.find(
         (el) => el.id == collectionId
       );
-      if(accessToken.value.length > 0) getTodos()
+      if(accessToken.value && accessToken.value.length > 0) getTodos()
     });
     })
 

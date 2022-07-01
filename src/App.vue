@@ -44,9 +44,9 @@
                 <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
               </svg>
               <span class="flex-1 ml-3">{{ cat.title }}</span>
-              <span v-if="Number(cat.num_tasks) > 0"
+              <span v-if="Number(todosCounter[cat.title]) > 0"
                 class="inline-flex justify-center items-center p-3 ml-3 w-3 h-3 text-sm font-medium text-blue-600 bg-blue-200 rounded-full dark:bg-blue-900 dark:text-blue-200"
-                >{{ cat.num_tasks }}</span
+                >{{ todosCounter[cat.title] }}</span
               >
             </router-link>
           </li>
@@ -102,13 +102,14 @@
 </template>
 
 <script>
-import { onMounted, ref, watchEffect } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { useTodoStore } from "@/stores/todo";
 import axios from "axios";
 import { todoPath, checkPath } from "@/services/apiPaths";
 import { useRoute, useRouter } from "vue-router";
 import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
+import {updateCounter} from '@/utils/UpdateTodosCounter';
 
 export default {
   name: "App",
@@ -117,7 +118,7 @@ export default {
   },
   setup() {
     const todoStore = useTodoStore();
-    const { todoCats, isLoggedIn, accessToken } = storeToRefs(todoStore);
+    const { todoCats, isLoggedIn, accessToken, todosCounter } = storeToRefs(todoStore);
     const route = useRoute();
     const modalKey = ref(0);
     const operation = ref(undefined);
@@ -148,8 +149,10 @@ export default {
       } else logout();
     });
 
-    watchEffect(() => {
-      if (isLoggedIn.value) getCollections();
+    watch(() => {
+      // if (isLoggedIn.value) getCollections();
+      console.log(todosCounter.value)
+      console.log(todoStore.todosCounter)
     });
 
     const getCollections = async () => {
@@ -162,6 +165,9 @@ export default {
       if (response.status === 200) {
         todoCats.value = response.data;
         todoStore.setTodoCats(response.data);
+        todoCats.value.forEach(el => {
+          updateCounter(el.title, el.num_tasks);
+        });
       }
     };
 
@@ -210,6 +216,7 @@ export default {
     };
 
     return {
+      todosCounter,
       isLoggedIn,
       todoCats,
       route,

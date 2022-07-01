@@ -21,7 +21,10 @@
       >
         <!-- Modal header -->
         <div
-        style="border: 2px solid rgb(198, 198, 198); border-collapse: collapse"
+          style="
+            border: 2px solid rgb(198, 198, 198);
+            border-collapse: collapse;
+          "
           class="flex justify-center items-start p-4 rounded-t border-b dark:border-gray-600"
         >
           <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -29,7 +32,10 @@
           </h3>
         </div>
         <!-- Modal body -->
-        <div class="p-6 space-y-6" style="border: 2px solid rgb(215, 214, 214); border-top: 0">
+        <div
+          class="p-6 space-y-6"
+          style="border: 2px solid rgb(215, 214, 214); border-top: 0"
+        >
           <div>
             <div class="my-4">
               <label
@@ -65,7 +71,11 @@
           <div style="display: flex; justify-content: center">
             <button
               type="submit"
-              style="display: flex; justify-content: center; align-items: center"
+              style="
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               @click="login"
             >
@@ -77,11 +87,14 @@
                 style="margin: 0"
               >
                 <path
-                fill="#FFF"
+                  fill="#FFF"
                   d="M8 9v-4l8 7-8 7v-4h-8v-6h8zm2-7v2h12v16h-12v2h14v-20h-14z"
                 />
               </svg>
-              <span style="margin-left: 5px; font-weight: bold; font-size: large">Login</span>
+              <span
+                style="margin-left: 5px; font-weight: bold; font-size: large"
+                >Login</span
+              >
             </button>
           </div>
           You don't have an account? Create one

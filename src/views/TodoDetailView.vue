@@ -236,7 +236,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useTodoStore } from "@/stores/todo";
 import DeleteTodoDialog from "@/components/DeleteTodoDialog.vue";
 import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
-import {updateCounter} from '@/utils/UpdateTodosCounter';
+import { updateCounter } from "@/utils/UpdateTodosCounter";
 
 export default {
   name: "TodoDetailView",
@@ -383,7 +383,7 @@ export default {
       });
       if (response.status === 200) {
         todoStore.setTodoCats(response.data);
-        todoStore.todoCats.forEach(el => {
+        todoStore.todoCats.forEach((el) => {
           updateCounter(el.title, el.num_tasks);
         });
       }

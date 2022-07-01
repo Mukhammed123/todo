@@ -44,7 +44,8 @@
                 <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
               </svg>
               <span class="flex-1 ml-3">{{ cat.title }}</span>
-              <span v-if="Number(todosCounter[cat.title]) > 0"
+              <span
+                v-if="Number(todosCounter[cat.title]) > 0"
                 class="inline-flex justify-center items-center p-3 ml-3 w-3 h-3 text-sm font-medium text-blue-600 bg-blue-200 rounded-full dark:bg-blue-900 dark:text-blue-200"
                 >{{ todosCounter[cat.title] }}</span
               >
@@ -59,7 +60,7 @@
             </button>
           </li>
           <li style="position: absolute; bottom: 0; width: 100%">
-            <button class="add-todo-btn" style="width: 100%;" @click="logout">
+            <button class="add-todo-btn" style="width: 100%" @click="logout">
               <div style="display: flex; padding: 8px; align-items: start">
                 <svg
                   width="24"
@@ -73,7 +74,9 @@
                     d="M11 21h8v-2l1-1v4h-9v2l-10-3v-18l10-3v2h9v5l-1-1v-3h-8v18zm10.053-9l-3.293-3.293.707-.707 4.5 4.5-4.5 4.5-.707-.707 3.293-3.293h-9.053v-1h9.053z"
                   />
                 </svg>
-                <span style="margin-left: 3px" class="add-new-todo">Log out</span>
+                <span style="margin-left: 3px" class="add-new-todo"
+                  >Log out</span
+                >
               </div>
             </button>
           </li>
@@ -109,7 +112,7 @@ import axios from "axios";
 import { todoPath, checkPath } from "@/services/apiPaths";
 import { useRoute, useRouter } from "vue-router";
 import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
-import {updateCounter} from '@/utils/UpdateTodosCounter';
+import { updateCounter } from "@/utils/UpdateTodosCounter";
 
 export default {
   name: "App",
@@ -118,7 +121,8 @@ export default {
   },
   setup() {
     const todoStore = useTodoStore();
-    const { todoCats, isLoggedIn, accessToken, todosCounter } = storeToRefs(todoStore);
+    const { todoCats, isLoggedIn, accessToken, todosCounter } =
+      storeToRefs(todoStore);
     const route = useRoute();
     const modalKey = ref(0);
     const operation = ref(undefined);
@@ -151,8 +155,8 @@ export default {
 
     watch(() => {
       // if (isLoggedIn.value) getCollections();
-      console.log(todosCounter.value)
-      console.log(todoStore.todosCounter)
+      console.log(todosCounter.value);
+      console.log(todoStore.todosCounter);
     });
 
     const getCollections = async () => {
@@ -165,7 +169,7 @@ export default {
       if (response.status === 200) {
         todoCats.value = response.data;
         todoStore.setTodoCats(response.data);
-        todoCats.value.forEach(el => {
+        todoCats.value.forEach((el) => {
           updateCounter(el.title, el.num_tasks);
         });
       }

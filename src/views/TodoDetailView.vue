@@ -255,7 +255,7 @@
           ></path>
         </svg>
         <div class="ml-3 text-sm font-medium text-red-700 dark:text-red-800">
-          Error Message: {{ snackbrMessage }}
+          Error Message: {{ snackbarMessage }}
         </div>
         <button
           type="button"
@@ -311,7 +311,7 @@ export default {
     const currentTaskDesc = ref(undefined);
     const currentCollection = ref(undefined);
     const hideSnackbar = ref(true);
-    const snackbrMessage = ref("");
+    const snackbarMessage = ref("");
     const router = useRouter();
 
     const { todoCats, accessToken } = storeToRefs(todoStore);
@@ -333,11 +333,14 @@ export default {
         if (response.status === 200) {
           todos.value = response.data;
           originalData.value = JSON.parse(JSON.stringify(response.data));
-          updateCounter(currentCollection.value.title, todos.value.filter(el=>el.finished === false).length);
+          updateCounter(
+            currentCollection.value.title,
+            todos.value.filter((el) => el.finished === false).length
+          );
         }
       } catch (err) {
         todos.value = [];
-        snackbrMessage.value = err.message;
+        snackbarMessage.value = err.message;
         hideSnackbar.value = false;
       }
     };
@@ -363,9 +366,13 @@ export default {
       } catch (err) {
         todos.value[checkedIndex].finished =
           !todos.value[checkedIndex].finished;
-        snackbrMessage.value = err.message;
+        snackbarMessage.value = err.message;
         hideSnackbar.value = false;
       }
+      updateCounter(
+        currentCollection.value.title,
+        todos.value.filter((el) => el.finished === false).length
+      );
     };
     const addCheckbox = async (text) => {
       const newTodo = {
@@ -383,7 +390,7 @@ export default {
         });
         getTodos();
       } catch (err) {
-        snackbrMessage.value = err.message;
+        snackbarMessage.value = err.message;
         hideSnackbar.value = false;
       }
     };
@@ -398,7 +405,7 @@ export default {
         });
         getTodos();
       } catch (err) {
-        snackbrMessage.value = err.message;
+        snackbarMessage.value = err.message;
         hideSnackbar.value = false;
       }
       currentTask.value = undefined;
@@ -436,7 +443,7 @@ export default {
 
         getTodos();
       } catch (err) {
-        snackbrMessage.value = err.message;
+        snackbarMessage.value = err.message;
         hideSnackbar.value = false;
       }
       currentTask.value = undefined;
@@ -461,7 +468,7 @@ export default {
         );
         getCollections();
       } catch (err) {
-        snackbrMessage.value = err.message;
+        snackbarMessage.value = err.message;
         hideSnackbar.value = false;
       }
     };
@@ -507,7 +514,7 @@ export default {
     };
 
     return {
-      snackbrMessage,
+      snackbarMessage,
       openDeleteColDialog,
       hideSnackbar,
       todos,

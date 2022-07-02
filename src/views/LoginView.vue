@@ -97,10 +97,21 @@
               >
             </button>
           </div>
-          <div style="display: flex; justify-content: center"><router-link to="/register"><span style="color: blue; cursor: pointer">You don't have an account? Create one!</span></router-link></div>
+          <div style="display: flex; justify-content: center">
+            <router-link to="/register"
+              ><span style="color: blue; cursor: pointer"
+                >You don't have an account? Create one!</span
+              ></router-link
+            >
+          </div>
         </div>
       </div>
     </div>
+    <Snackbar
+      :hide-snackbar="hideSnackbar"
+      :snackbar-message="snackbarMessage"
+      @close="hideSnackbar = true"
+    />
   </div>
 </template>
 
@@ -110,12 +121,16 @@ import { useTodoStore } from "@/stores/todo";
 import { useRouter } from "vue-router";
 import { loginPath, todoPath } from "@/services/apiPaths";
 import axios from "axios";
+import Snackbar from "@/components/Snackbar.vue";
 
 export default {
   name: "LoginView",
+  components: { Snackbar },
   setup() {
     const username = ref("");
     const password = ref("");
+    const hideSnackbar = ref(true);
+    const snackbarMessage = ref("");
     const router = useRouter();
     const todoStore = useTodoStore();
 
@@ -125,21 +140,26 @@ export default {
           username: username.value,
           password: password.value,
         };
-        const loginResponse = await axios.post(loginPath, data, {
-          headers: {
-            "Content-Type": "Application/json",
-          },
-        });
-        if (loginResponse.status === 200) {
-          const accessToken = loginResponse.data.access;
-          const refreshToken = loginResponse.data.refresh;
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-          todoStore.setAccessToken(accessToken);
-          todoStore.setRefreshToken(refreshToken);
-          todoStore.setIsLoggedIn(true);
-          getCollections();
-          router.push("/");
+        try {
+          const loginResponse = await axios.post(loginPath, data, {
+            headers: {
+              "Content-Type": "Application/json",
+            },
+          });
+          if (loginResponse.status === 200) {
+            const accessToken = loginResponse.data.access;
+            const refreshToken = loginResponse.data.refresh;
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("refreshToken", refreshToken);
+            todoStore.setAccessToken(accessToken);
+            todoStore.setRefreshToken(refreshToken);
+            todoStore.setIsLoggedIn(true);
+            getCollections();
+            router.push("/");
+          }
+        } catch (err) {
+          snackbarMessage.value = err.message;
+          hideSnackbar.value = false;
         }
       }
     };
@@ -159,7 +179,6 @@ export default {
           });
         }
       } catch (err) {
-
         console.log(err);
         // hideSnackbar.value = false;
         // snackbarMessage.value = err.message;
@@ -167,6 +186,8 @@ export default {
     };
 
     return {
+      hideSnackbar,
+      snackbarMessage,
       username,
       password,
       login,

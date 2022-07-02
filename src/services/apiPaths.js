@@ -5,3 +5,4 @@ export const todoItemPath = `${baseUrl}/todo/list/`;
 export const loginPath = `${baseUrl}/user/login/`;
 export const logoutPath = `${baseUrl}/user/logout/`;
 export const checkPath = `${baseUrl}/user/check/`;
+export const registerPath = `${baseUrl}/user/register/`;

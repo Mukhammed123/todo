@@ -48,7 +48,7 @@
                 type="text"
                 id="first_name"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Username"
+                placeholder="Mukhammed"
                 required
               />
             </div>
@@ -56,14 +56,14 @@
               <label
                 for="email"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >Username</label
+                >Email</label
               >
               <input
-                v-model="username"
-                type="text"
-                id="emal"
+                v-model="email"
+                type="email"
+                id="email"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Email"
+                placeholder="example@gmail.com"
                 required
               />
             </div>
@@ -78,7 +78,7 @@
                 type="password"
                 id="password"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Password"
+                placeholder="********"
                 required
               />
             </div>
@@ -86,14 +86,14 @@
               <label
                 for="confirm_password"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >Password</label
+                >Confirm Password</label
               >
               <input
-                v-model="password"
+                v-model="confirmPassword"
                 type="password"
                 id="confirm_password"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Confirm Password"
+                placeholder="********"
                 required
               />
             </div>
@@ -107,16 +107,32 @@
                 align-items: center;
               "
               class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              @click="login"
+              @click="register"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#FFF" d="M15.812 4.819c-.33-.341-.312-.877.028-1.207l3.469-3.365c.17-.164.387-.247.603-.247.219 0 .438.085.604.257l-4.704 4.562zm-5.705 8.572c-.07.069-.107.162-.107.255 0 .194.158.354.354.354.089 0 .178-.033.247-.1l.583-.567-.493-.509-.584.567zm4.924-6.552l-1.994 1.933c-1.072 1.039-1.619 2.046-2.124 3.451l.881.909c1.419-.461 2.442-.976 3.514-2.016l1.994-1.934-2.271-2.343zm5.816-5.958l-5.137 4.982 2.586 2.671 5.138-4.98c.377-.366.566-.851.566-1.337 0-1.624-1.968-2.486-3.153-1.336zm-11.847 12.119h-4v1h4v-1zm9-1.35v1.893c0 4.107-6 2.457-6 2.457s1.518 6-2.638 6h-7.362v-20h12.629l2.062-2h-16.691v24h10.189c3.163 0 9.811-7.223 9.811-9.614v-4.687l-2 1.951z"/></svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="#FFF"
+                  d="M15.812 4.819c-.33-.341-.312-.877.028-1.207l3.469-3.365c.17-.164.387-.247.603-.247.219 0 .438.085.604.257l-4.704 4.562zm-5.705 8.572c-.07.069-.107.162-.107.255 0 .194.158.354.354.354.089 0 .178-.033.247-.1l.583-.567-.493-.509-.584.567zm4.924-6.552l-1.994 1.933c-1.072 1.039-1.619 2.046-2.124 3.451l.881.909c1.419-.461 2.442-.976 3.514-2.016l1.994-1.934-2.271-2.343zm5.816-5.958l-5.137 4.982 2.586 2.671 5.138-4.98c.377-.366.566-.851.566-1.337 0-1.624-1.968-2.486-3.153-1.336zm-11.847 12.119h-4v1h4v-1zm9-1.35v1.893c0 4.107-6 2.457-6 2.457s1.518 6-2.638 6h-7.362v-20h12.629l2.062-2h-16.691v24h10.189c3.163 0 9.811-7.223 9.811-9.614v-4.687l-2 1.951z"
+                />
+              </svg>
               <span
                 style="margin-left: 5px; font-weight: bold; font-size: large"
                 >Register</span
               >
             </button>
           </div>
-          <div style="display: flex; justify-content: center"><router-link to="/login"><span style="color: blue; cursor: pointer">Already have an account? Login</span></router-link></div>
+          <div style="display: flex; justify-content: center">
+            <router-link to="/login"
+              ><span style="color: blue; cursor: pointer"
+                >Already have an account? Login</span
+              ></router-link
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -125,9 +141,8 @@
 
 <script>
 import { ref } from "vue";
-import { useTodoStore } from "@/stores/todo";
 import { useRouter } from "vue-router";
-import { loginPath, todoPath } from "@/services/apiPaths";
+import { registerPath, todoPath } from "@/services/apiPaths";
 import axios from "axios";
 
 export default {
@@ -135,60 +150,35 @@ export default {
   setup() {
     const username = ref("");
     const password = ref("");
+    const email = ref("");
+    const confirmPassword = ref("");
     const router = useRouter();
-    const todoStore = useTodoStore();
 
-    const login = async () => {
+    const register = async () => {
       if (username.value.length > 0 && password.value.length > 0) {
         const data = {
           username: username.value,
+          email: email.value,
           password: password.value,
+          confirm_password: confirmPassword.value,
         };
-        const loginResponse = await axios.post(loginPath, data, {
+        const loginResponse = await axios.post(registerPath, data, {
           headers: {
             "Content-Type": "Application/json",
           },
         });
-        if (loginResponse.status === 200) {
-          const accessToken = loginResponse.data.access;
-          const refreshToken = loginResponse.data.refresh;
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-          todoStore.setAccessToken(accessToken);
-          todoStore.setRefreshToken(refreshToken);
-          todoStore.setIsLoggedIn(true);
-          getCollections();
+        if (loginResponse.status === 201) {
           router.push("/");
         }
       }
     };
 
-    const getCollections = async () => {
-      try {
-        const response = await axios.get(todoPath, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${todoStore.accessToken}`,
-          },
-        });
-        if (response.status === 200) {
-          todoStore.setTodoCats(response.data);
-          todoStore.todoCats.forEach((el) => {
-            updateCounter(el.title, el.num_tasks);
-          });
-        }
-      } catch (err) {
-
-        console.log(err);
-        // hideSnackbar.value = false;
-        // snackbarMessage.value = err.message;
-      }
-    };
-
     return {
+      email,
+      confirmPassword,
       username,
       password,
-      login,
+      register,
     };
   },
 };

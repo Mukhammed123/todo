@@ -225,9 +225,11 @@
       :id="`editCollection-backdrop`"
     ></div>
     <Snackbar
+      snackbar-id="todoDetailError"
       :hide-snackbar="hideSnackbar"
       :snackbar-message="snackbarMessage"
       @close="hideSnackbar = true"
+      type="red"
     />
   </main>
 </template>

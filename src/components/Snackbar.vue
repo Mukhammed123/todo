@@ -15,15 +15,15 @@
       class="snackbar-container"
     >
       <div
-        id="errorSnackbar"
+        :id="snackbarId"
         style="height: 50px"
         :class="`${
           hideSnackbar ? 'hidden' : ''
-        } flex p-4 mb-4 bg-red-100 rounded-lg dark:bg-red-200`"
+        } flex p-4 mb-4 bg-${type}-100 rounded-lg dark:bg-${type}-200`"
         role="alert"
       >
         <svg
-          class="flex-shrink-0 w-5 h-5 text-red-700 dark:text-red-800"
+          :class="`flex-shrink-0 w-5 h-5 text-${type}-700 dark:text-${type}-800`"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -34,12 +34,15 @@
             clip-rule="evenodd"
           ></path>
         </svg>
-        <div class="ml-3 text-sm font-medium text-red-700 dark:text-red-800">
-          Error Message: {{ snackbarMessage }}
+        <div
+          :class="`ml-3 text-sm font-medium text-${type}-700 dark:text-${type}-800`"
+        >
+          {{ `${type === "red" ? "Error Message:" : "Message:"}` }}
+          {{ snackbarMessage }}
         </div>
         <button
           type="button"
-          class="ml-auto -mx-1.5 -my-1.5 bg-red-100 text-red-500 rounded-lg focus:ring-2 focus:ring-red-400 p-1.5 hover:bg-red-200 inline-flex h-8 w-8 dark:bg-red-200 dark:text-red-600 dark:hover:bg-red-300"
+          :class="`ml-auto -mx-1.5 -my-1.5 bg-${type}-100 text-${type}-500 rounded-lg focus:ring-2 focus:ring-${type}-400 p-1.5 hover:bg-${type}-200 inline-flex h-8 w-8 dark:bg-${type}-200 dark:text-${type}-600 dark:hover:bg-${type}-300`"
           @click="$emit('close')"
           aria-label="Close"
         >
@@ -68,6 +71,8 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "Snackbar",
   props: {
+    snackbarId: { type: String, default: "errorSnackbar" },
+    type: { type: String, default: "error" },
     hideSnackbar: { type: Boolean, default: true },
     snackbarMessage: { type: String, default: "" },
   },

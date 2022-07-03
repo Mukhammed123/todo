@@ -108,8 +108,10 @@
       </div>
     </div>
     <Snackbar
+      snackbar-id="loginSnackbarError"
       :hide-snackbar="hideSnackbar"
       :snackbar-message="snackbarMessage"
+      type="red"
       @close="hideSnackbar = true"
     />
   </div>

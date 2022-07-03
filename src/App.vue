@@ -104,8 +104,10 @@
     </aside>
     <RouterView :key="route.path" />
     <Snackbar
+      snackbar-id="appSnackbarError"
       :hide-snackbar="hideSnackbar"
       :snackbar-message="snackbarMessage"
+      type="red"
       @close="hideSnackbar = true"
     />
   </div>

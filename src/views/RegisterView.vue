@@ -78,7 +78,7 @@
                 type="password"
                 id="password"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="********"
+                placeholder="At least 8 symbols"
                 required
               />
             </div>
@@ -93,7 +93,7 @@
                 type="password"
                 id="confirm_password"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="********"
+                placeholder="At least 8 symbols"
                 required
               />
             </div>
@@ -136,48 +136,91 @@
         </div>
       </div>
     </div>
+    <Snackbar
+      snackbar-id="registerSnackbar"
+      :key="snackbarKey"
+      :hide-snackbar="hideSnackbar"
+      :snackbar-message="snackbarMessage"
+      :type="type"
+      @close="hideSnackbar = true"
+    />
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { registerPath, todoPath } from "@/services/apiPaths";
+import { registerPath } from "@/services/apiPaths";
 import axios from "axios";
+import Snackbar from "@/components/Snackbar.vue";
 
 export default {
   name: "RegisterView",
+  components: { Snackbar },
   setup() {
+    const snackbarKey = ref(0);
     const username = ref("");
     const password = ref("");
     const email = ref("");
     const confirmPassword = ref("");
     const router = useRouter();
+    const hideSnackbar = ref(true);
+    const snackbarMessage = ref("");
+    const type = ref("red");
+
+    const legitEmail = () => {
+      const splittedVal = email.value.split("@")[1];
+      return (
+        email.value.length > 4 &&
+        splittedVal[0] &&
+        splittedVal[0].length > 0 &&
+        splittedVal[1] &&
+        splittedVal.split(".")[1] &&
+        splittedVal.split(".")[0] &&
+        splittedVal.split(".")[0].length > 0 &&
+        splittedVal.split(".")[1].length > 0
+      );
+    };
+
+    const passwordCheck = () =>
+      password.value.length > 6 &&
+      confirmPassword.value.length > 6 &&
+      password.value === confirmPassword.value;
 
     const register = async () => {
-      if (username.value.length > 0 && password.value.length > 0) {
+      hideSnackbar.value = true;
+      if (username.value.length > 0 && passwordCheck() && legitEmail()) {
         const data = {
           username: username.value,
           email: email.value,
-          password: password.value,
-          confirm_password: confirmPassword.value,
+          password: password.value
         };
-        const loginResponse = await axios.post(registerPath, data, {
+        const registerResponse = await axios.post(registerPath, data, {
           headers: {
             "Content-Type": "Application/json",
           },
         });
-        if (loginResponse.status === 201) {
-          router.push("/");
+        console.log(registerResponse);
+        if (registerResponse.status > 199 && registerResponse.status < 300) {
+          router.push("/login");
         }
+      } else {
+        snackbarKey.value += 1;
+        snackbarMessage.value =
+          "Please enter a username & a legit email & passsord with at least 6 symbols";
+        hideSnackbar.value = false;
       }
     };
 
     return {
+      snackbarKey,
+      hideSnackbar,
+      snackbarMessage,
       email,
       confirmPassword,
       username,
       password,
+      type,
       register,
     };
   },

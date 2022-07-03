@@ -195,14 +195,18 @@ export default {
           email: email.value,
           password: password.value
         };
+        try {
         const registerResponse = await axios.post(registerPath, data, {
           headers: {
             "Content-Type": "Application/json",
           },
         });
-        console.log(registerResponse);
         if (registerResponse.status > 199 && registerResponse.status < 300) {
           router.push("/login");
+        }
+        } catch(err) {
+          snackbarMessage.value = err.message;
+          hideSnackbar.value = false;
         }
       } else {
         snackbarKey.value += 1;

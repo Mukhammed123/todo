@@ -4,12 +4,12 @@
       <div class="title-container">
         <div class="text-container">
           <h1>
-            Mukhammed Musa
+            {{ currentCollection ? currentCollection.title : "" }}
             <!-- <button @click="showDialog('add')">Add Todo</button> -->
           </h1>
           <div style="display: flex; justify-content: space-between">
             <h3>
-              {{ currentCollection ? currentCollection.title : "" }}
+              {{ username }}
             </h3>
             <div style="display: flex">
               <div
@@ -266,7 +266,7 @@ export default {
     const snackbarMessage = ref("");
     const router = useRouter();
 
-    const { todoCats, accessToken } = storeToRefs(todoStore);
+    const { todoCats, accessToken, username } = storeToRefs(todoStore);
 
     onMounted(() => {
       watchEffect(() => {
@@ -465,6 +465,7 @@ export default {
     };
 
     return {
+      username,
       snackbarMessage,
       openDeleteColDialog,
       hideSnackbar,

@@ -9,6 +9,7 @@ export const useTodoStore = defineStore({
     accessToken: "",
     refreshToken: "",
     isLoggedIn: false,
+    routerViewKey: 0,
   }),
   getters: {
     getTodoList: (state) => state.todoList,
@@ -16,6 +17,9 @@ export const useTodoStore = defineStore({
   actions: {
     setTodosCounter(value) {
       this.todosCounter = value;
+    },
+    setRouterViewKey(value) {
+      this.routerViewKey = value;
     },
     setUsername(value) {
       this.username = value;

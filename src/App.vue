@@ -15,6 +15,7 @@
             <router-link
               :to="`/`"
               class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              @click="updateRouterKey"
             >
               <svg
                 class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -36,6 +37,7 @@
           <li v-for="(cat, index) in todoCats" :key="`${cat.title}-${index}`">
             <router-link
               :to="`/todo-detail/${cat.id}`"
+              @click="updateRouterKey"
               class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <svg
@@ -106,7 +108,7 @@
         :id="`addCollectionModel-backdrop`"
       ></div>
     </aside>
-    <RouterView :key="route.path" />
+    <RouterView :key="routerViewKey" />
     <Snackbar
       snackbar-id="appSnackbarError"
       :hide-snackbar="hideSnackbar"
@@ -121,10 +123,12 @@ import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useTodoStore } from "@/stores/todo";
 import axios from "axios";
+import jwt_decode from "jwt-decode";
 import { todoPath, checkPath } from "@/services/apiPaths";
 import { useRoute, useRouter } from "vue-router";
 import AddEditTaskDialog from "@/components/AddEditTaskDialog.vue";
 import { updateCounter } from "@/utils/UpdateTodosCounter";
+import { getUserData } from "@/utils/GetUsersData";
 import Snackbar from "@/components/Snackbar.vue";
 
 export default {
@@ -135,7 +139,7 @@ export default {
   },
   setup() {
     const todoStore = useTodoStore();
-    const { todoCats, isLoggedIn, accessToken, todosCounter } =
+    const { todoCats, isLoggedIn, accessToken, todosCounter, routerViewKey } =
       storeToRefs(todoStore);
     const route = useRoute();
     const modalKey = ref(0);
@@ -161,12 +165,21 @@ export default {
         if (response.status === 200) {
           todoStore.setIsLoggedIn(true);
           todoStore.setAccessToken(accessTokenLS);
-          getCollections();
-        } else {
-          logout();
-        }
+          todoStore.setRouterViewKey(routerViewKey.value += 1);
+          const decodedData = jwt_decode(accessToken.value);
+          const userResponse = await getUserData(
+            decodedData.user_id,
+            accessToken.value
+          );
+          if (userResponse) getCollections();
+          else logout();
+        } else logout();
       } else logout();
     });
+
+    const updateRouterKey = () => {
+      todoStore.setRouterViewKey(routerViewKey.value += 1);
+    }
 
     const getCollections = async () => {
       try {
@@ -177,7 +190,6 @@ export default {
           },
         });
         if (response.status === 200) {
-          todoCats.value = response.data;
           todoStore.setTodoCats(response.data);
           todoCats.value.forEach((el) => {
             updateCounter(el.title, el.num_tasks);
@@ -239,6 +251,8 @@ export default {
     };
 
     return {
+      routerViewKey,
+      updateRouterKey,
       hideSnackbar,
       snackbarMessage,
       todosCounter,

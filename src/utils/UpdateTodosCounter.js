@@ -5,4 +5,5 @@ export const updateCounter = (title, todos) => {
   const tempCounter = JSON.parse(JSON.stringify(todoStore.todosCounter));
   tempCounter[title] = todos;
   todoStore.setTodosCounter(tempCounter);
+  console.log(todoStore.todosCounter)
 };

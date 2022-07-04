@@ -35,7 +35,7 @@
           ></path>
         </svg>
         <div :class="`ml-3 text-sm font-medium text-red-700 dark:text-red-800`">
-          {{ `${type === "red" ? "Error Message:" : "Message:"}` }}
+          Error Message:
           {{ snackbarMessage }}
         </div>
         <button

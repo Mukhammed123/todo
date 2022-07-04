@@ -122,6 +122,9 @@ import { ref } from "vue";
 import { useTodoStore } from "@/stores/todo";
 import { useRouter } from "vue-router";
 import { loginPath, todoPath } from "@/services/apiPaths";
+import { getUserData } from "@/utils/GetUsersData";
+import {updateCounter} from "@/utils/UpdateTodosCounter";
+import jwt_decode from "jwt-decode";
 import axios from "axios";
 import Snackbar from "@/components/Snackbar.vue";
 
@@ -150,15 +153,26 @@ export default {
             },
           });
           if (loginResponse.status === 200) {
-            const accessToken = loginResponse.data.access;
-            const refreshToken = loginResponse.data.refresh;
-            localStorage.setItem("accessToken", accessToken);
-            localStorage.setItem("refreshToken", refreshToken);
-            todoStore.setAccessToken(accessToken);
-            todoStore.setRefreshToken(refreshToken);
-            todoStore.setIsLoggedIn(true);
-            getCollections();
-            router.push("/");
+            const decodedData = jwt_decode(loginResponse.data.access);
+            const userResponse = await getUserData(
+              decodedData.user_id,
+              loginResponse.data.access
+            );
+            if (userResponse) {
+              const accessToken = loginResponse.data.access;
+              const refreshToken = loginResponse.data.refresh;
+              localStorage.setItem("accessToken", accessToken);
+              localStorage.setItem("refreshToken", refreshToken);
+              todoStore.setAccessToken(accessToken);
+              todoStore.setRefreshToken(refreshToken);
+              todoStore.setIsLoggedIn(true);
+              getCollections();
+              router.push("/");
+            } else {
+              snackbarMessage.value = "Failed to get user's data";
+              snackbarKey.value += 1;
+              hideSnackbar.value = false;
+            }
           }
         } catch (err) {
           snackbarMessage.value = err.message;

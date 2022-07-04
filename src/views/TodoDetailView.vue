@@ -4,12 +4,16 @@
       <div class="title-container">
         <div class="text-container">
           <h1>
-            {{ currentCollection ? currentCollection.title : "" }}
+            {{
+              currentCollection && currentCollection.title
+                ? currentCollection.title.toUpperCase()
+                : ""
+            }}
             <!-- <button @click="showDialog('add')">Add Todo</button> -->
           </h1>
           <div style="display: flex; justify-content: space-between">
             <h3>
-              {{ username }}
+              {{ username ? username.toUpperCase() : "" }}
             </h3>
             <div style="display: flex">
               <div

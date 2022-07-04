@@ -123,7 +123,7 @@ import { useTodoStore } from "@/stores/todo";
 import { useRouter } from "vue-router";
 import { loginPath, todoPath } from "@/services/apiPaths";
 import { getUserData } from "@/utils/GetUsersData";
-import {updateCounter} from "@/utils/UpdateTodosCounter";
+import { updateCounter } from "@/utils/UpdateTodosCounter";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import Snackbar from "@/components/Snackbar.vue";

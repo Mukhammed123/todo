@@ -165,7 +165,7 @@ export default {
         if (response.status === 200) {
           todoStore.setIsLoggedIn(true);
           todoStore.setAccessToken(accessTokenLS);
-          todoStore.setRouterViewKey(routerViewKey.value += 1);
+          todoStore.setRouterViewKey((routerViewKey.value += 1));
           const decodedData = jwt_decode(accessToken.value);
           const userResponse = await getUserData(
             decodedData.user_id,
@@ -178,8 +178,8 @@ export default {
     });
 
     const updateRouterKey = () => {
-      todoStore.setRouterViewKey(routerViewKey.value += 1);
-    }
+      todoStore.setRouterViewKey((routerViewKey.value += 1));
+    };
 
     const getCollections = async () => {
       try {

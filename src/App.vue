@@ -15,7 +15,6 @@
             <router-link
               :to="`/`"
               class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              @click="updateRouterKey"
             >
               <svg
                 class="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
@@ -37,7 +36,6 @@
           <li v-for="(cat, index) in todoCats" :key="`${cat.title}-${index}`">
             <router-link
               :to="`/todo-detail/${cat.id}`"
-              @click="updateRouterKey"
               class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <svg
@@ -108,7 +106,7 @@
         :id="`addCollectionModel-backdrop`"
       ></div>
     </aside>
-    <RouterView :key="routerViewKey" />
+    <RouterView :key="route.path" />
     <Snackbar
       snackbar-id="appSnackbarError"
       :hide-snackbar="hideSnackbar"
@@ -139,7 +137,7 @@ export default {
   },
   setup() {
     const todoStore = useTodoStore();
-    const { todoCats, isLoggedIn, accessToken, todosCounter, routerViewKey } =
+    const { todoCats, isLoggedIn, accessToken, todosCounter } =
       storeToRefs(todoStore);
     const route = useRoute();
     const modalKey = ref(0);
@@ -152,6 +150,7 @@ export default {
     onMounted(async () => {
       const accessTokenLS = localStorage.getItem("accessToken");
       if ((accessTokenLS || "").length > 0) {
+        try {
         const response = await axios.post(
           checkPath,
           {},
@@ -165,7 +164,6 @@ export default {
         if (response.status === 200) {
           todoStore.setIsLoggedIn(true);
           todoStore.setAccessToken(accessTokenLS);
-          todoStore.setRouterViewKey((routerViewKey.value += 1));
           const decodedData = jwt_decode(accessToken.value);
           const userResponse = await getUserData(
             decodedData.user_id,
@@ -174,12 +172,11 @@ export default {
           if (userResponse) getCollections();
           else logout();
         } else logout();
+      } catch {
+        logout();
+      }
       } else logout();
     });
-
-    const updateRouterKey = () => {
-      todoStore.setRouterViewKey((routerViewKey.value += 1));
-    };
 
     const getCollections = async () => {
       try {
@@ -251,8 +248,6 @@ export default {
     };
 
     return {
-      routerViewKey,
-      updateRouterKey,
       hideSnackbar,
       snackbarMessage,
       todosCounter,

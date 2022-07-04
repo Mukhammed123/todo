@@ -1,6 +1,10 @@
 <template>
   <div class="app-container">
-    <aside v-if="isLoggedIn" class="w-64" aria-label="Sidebar">
+    <aside
+      v-if="isLoggedIn && route.path !== '/login' && route.path !== '/register'"
+      class="w-64"
+      aria-label="Sidebar"
+    >
       <div
         class="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800"
       >
@@ -107,14 +111,13 @@
       snackbar-id="appSnackbarError"
       :hide-snackbar="hideSnackbar"
       :snackbar-message="snackbarMessage"
-      type="red"
       @close="hideSnackbar = true"
     />
   </div>
 </template>
 
 <script>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useTodoStore } from "@/stores/todo";
 import axios from "axios";

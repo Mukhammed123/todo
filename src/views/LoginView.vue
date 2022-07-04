@@ -108,10 +108,10 @@
       </div>
     </div>
     <Snackbar
+      :key="snackbarKey"
       snackbar-id="loginSnackbarError"
       :hide-snackbar="hideSnackbar"
       :snackbar-message="snackbarMessage"
-      type="red"
       @close="hideSnackbar = true"
     />
   </div>
@@ -133,6 +133,7 @@ export default {
     const password = ref("");
     const hideSnackbar = ref(true);
     const snackbarMessage = ref("");
+    const snackbarKey = ref(0);
     const router = useRouter();
     const todoStore = useTodoStore();
 
@@ -161,6 +162,7 @@ export default {
           }
         } catch (err) {
           snackbarMessage.value = err.message;
+          snackbarKey.value += 1;
           hideSnackbar.value = false;
         }
       }
@@ -181,13 +183,14 @@ export default {
           });
         }
       } catch (err) {
-        console.log(err);
-        // hideSnackbar.value = false;
-        // snackbarMessage.value = err.message;
+        snackbarMessage.value = err.message;
+        snackbarKey.value += 1;
+        hideSnackbar.value = false;
       }
     };
 
     return {
+      snackbarKey,
       hideSnackbar,
       snackbarMessage,
       username,

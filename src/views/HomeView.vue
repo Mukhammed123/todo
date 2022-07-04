@@ -5,17 +5,16 @@
 </template>
 
 <script>
-import {useTodoStore} from '@/stores/todo';
-import {useRouter} from 'vue-router';
+import { useTodoStore } from "@/stores/todo";
+import { useRouter } from "vue-router";
 export default {
   name: "HomeView",
   setup() {
     const todoStore = useTodoStore();
     const router = useRouter();
 
-    if(!todoStore.isLoggedIn) router.push('/login');
-    return {
-    };
+    if (!todoStore.isLoggedIn) router.push("/login");
+    return {};
   },
 };
 </script>

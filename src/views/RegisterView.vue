@@ -141,32 +141,35 @@
       :key="snackbarKey"
       :hide-snackbar="hideSnackbar"
       :snackbar-message="snackbarMessage"
-      :type="type"
       @close="hideSnackbar = true"
+    />
+    <SuccessSnackbar
+      :hide-snackbar="hideSuccessSnackbar"
+      snackbar-message="You have successfully created a profile. Please log in."
+      @close="hideSuccessSnackbar = true"
     />
   </div>
 </template>
 
 <script>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 import { registerPath } from "@/services/apiPaths";
 import axios from "axios";
 import Snackbar from "@/components/Snackbar.vue";
+import SuccessSnackbar from "@/components/SuccessSnackbar.vue";
 
 export default {
   name: "RegisterView",
-  components: { Snackbar },
+  components: { Snackbar, SuccessSnackbar },
   setup() {
     const snackbarKey = ref(0);
     const username = ref("");
     const password = ref("");
     const email = ref("");
     const confirmPassword = ref("");
-    const router = useRouter();
     const hideSnackbar = ref(true);
     const snackbarMessage = ref("");
-    const type = ref("red");
+    const hideSuccessSnackbar = ref(true);
 
     const legitEmail = () => {
       const splittedVal = email.value.split("@")[1];
@@ -189,22 +192,27 @@ export default {
 
     const register = async () => {
       hideSnackbar.value = true;
+      hideSuccessSnackbar.value = true;
       if (username.value.length > 0 && passwordCheck() && legitEmail()) {
         const data = {
           username: username.value,
           email: email.value,
-          password: password.value
+          password: password.value,
         };
         try {
-        const registerResponse = await axios.post(registerPath, data, {
-          headers: {
-            "Content-Type": "Application/json",
-          },
-        });
-        if (registerResponse.status > 199 && registerResponse.status < 300) {
-          router.push("/login");
-        }
-        } catch(err) {
+          const registerResponse = await axios.post(registerPath, data, {
+            headers: {
+              "Content-Type": "Application/json",
+            },
+          });
+          if (registerResponse.status > 199 && registerResponse.status < 300) {
+            hideSuccessSnackbar.value = false;
+            username.value = "";
+            email.value = "";
+            password.value = "";
+            confirmPassword.value = "";
+          }
+        } catch (err) {
           snackbarMessage.value = err.message;
           hideSnackbar.value = false;
         }
@@ -217,6 +225,7 @@ export default {
     };
 
     return {
+      hideSuccessSnackbar,
       snackbarKey,
       hideSnackbar,
       snackbarMessage,
@@ -224,7 +233,6 @@ export default {
       confirmPassword,
       username,
       password,
-      type,
       register,
     };
   },

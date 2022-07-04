@@ -229,7 +229,6 @@
       :hide-snackbar="hideSnackbar"
       :snackbar-message="snackbarMessage"
       @close="hideSnackbar = true"
-      type="red"
     />
   </main>
 </template>
